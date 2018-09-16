@@ -19,7 +19,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,7 +34,6 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
     //Firebase Variables
     FirebaseAuth mAuth;
-    FirebaseUser mUser;
     DatabaseReference userDatabase;
     FirebaseHelper firebaseHelper;
 
@@ -105,10 +103,9 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI();
+                              updateUI();
                             //Start the Map Activity
-                            
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -151,7 +148,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
 
             //Saving all the Data into an Object
-            if (userProfileUpload != " ") {
+            if (userProfileUpload.equals(" ")) {
                 UserProfile Profile_Info = new UserProfile(personName, personGivenName, personFamilyName, personEmail, personId, userProfileUpload, personLatitude, personLongitude);
 
 
