@@ -1,0 +1,61 @@
+{
+  "project_info": {
+    "project_number": "514206301078",
+    "firebase_url": "https://yobro-215722.firebaseio.com",
+    "project_id": "yobro-215722",
+    "storage_bucket": "yobro-215722.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514206301078:android:bf3559637c3cd502",
+        "android_client_info": {
+          "package_name": "com.yobro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "514206301078-807cgkj003ejb0mjr9ed32k02sj1407a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yobro",
+            "certificate_hash": "3fb73e68deca807b9cc31a93f50f8883bb06d857"
+          }
+        },
+        {
+          "client_id": "514206301078-c07tlf764nqnm9iod084lq9e6riqvi01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvUdn-idqO3Wfxv0uq6ilUhFKvRFgJ3Ys"
+        },
+        {
+          "current_key": "AIzaSyAGINdIAltqIiegaeWGUn8d9T9AhWKYVcI"
+        },
+        {
+          "current_key": "AIzaSyDonCIqxFkz9Zh3yCrJR2ZI14rQF6rZjac"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "514206301078-c07tlf764nqnm9iod084lq9e6riqvi01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

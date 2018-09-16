@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorDark"
+    android:id="@+id/signin_Layout"
+    tools:context=".LoginAct">
+
+
+
+    <ImageView
+        android:id="@+id/appLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="20dp"
+        app:srcCompat="@drawable/googleg_standard_color_18"
+        android:contentDescription="@string/app_name"/>
+
+
+    <EditText
+        android:id="@+id/emailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:ems="10"
+        android:layout_marginTop="50dp"
+        android:inputType="textEmailAddress"
+        android:hint="@string/prompt_email"/>
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_gravity="center_horizontal"
+        android:inputType="textPassword"
+        android:hint="@string/prompt_password"/>
+
+    <Button
+        android:id="@+id/signInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:text="@string/action_sign_in" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="300dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/background_light" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/gSignInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:text="@string/GSign"
+        android:background="@color/colorAccent"
+        android:textColor="@android:color/white"
+
+        />
+
+
+
+</LinearLayout>
