@@ -50,7 +50,7 @@ public class FirebaseHelper {
 
     boolean checkIt()
     {
-       return true;
+       return false;
     }
 
     public boolean saveUserData(UserProfile profileInfo){
