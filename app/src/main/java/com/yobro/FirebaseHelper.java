@@ -39,7 +39,7 @@ public class FirebaseHelper {
         return mUser;
     }
 
-    public FirebaseHelper(){
+    private FirebaseHelper(){
 
         getmAuth();
         getmUser();
