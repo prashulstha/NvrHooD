@@ -2,10 +2,10 @@ package com.yobro;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseException;
@@ -18,20 +18,20 @@ import com.google.firebase.storage.UploadTask;
 public class FirebaseHelper {
 
     //Firebase Variables
-    FirebaseAuth mAuth;
-    FirebaseUser mUser;
-    DatabaseReference userDataBaseRef;
-    FirebaseDatabase firebaseDatabase;
-    final StorageReference storageReference;
-    String userID;
-    String returnUri;
+    private FirebaseAuth mAuth;
+    private FirebaseUser mUser;
+    private DatabaseReference userDataBaseRef;
+    private FirebaseDatabase firebaseDatabase;
+    private final StorageReference storageReference;
+    private String userID;
+    private String returnUri;
 
-    public FirebaseAuth getmAuth() {
+    private FirebaseAuth getmAuth() {
         mAuth = FirebaseAuth.getInstance();
         return mAuth;
     }
 
-    public FirebaseUser getmUser() {
+    private FirebaseUser getmUser() {
         mUser = mAuth.getCurrentUser();
         if(mUser != null){
             userID = mUser.getUid();
@@ -44,6 +44,7 @@ public class FirebaseHelper {
         getmAuth();
         getmUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        userDataBaseRef = firebaseDatabase.getReference("Users");
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 
@@ -52,7 +53,7 @@ public class FirebaseHelper {
 
         try{
 
-            userDataBaseRef.child("Users").child(userID).setValue(profileInfo);
+            userDataBaseRef.child(userID).child("ProfileInfo").setValue(profileInfo);
 
             return true;
         }catch (DatabaseException e){
@@ -76,8 +77,8 @@ public class FirebaseHelper {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                         //Get a URL to the uploaded Profile Pic
-                       Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                       returnUri = downloadUrl.toString();
+                       Task<Uri> downloadUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                        returnUri = downloadUrl.toString();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

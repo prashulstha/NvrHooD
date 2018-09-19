@@ -144,16 +144,18 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
             //Check if the Person PP is not Null
 
             //Getting the returned URL from storing the user Profile pic in Firebase Storage
-                userProfileUpload  = firebaseHelper.saveProfilePic(personPhoto);
+                //userProfileUpload  = firebaseHelper.saveProfilePic(personPhoto);
+            userProfileUpload = personPhoto.toString();
 
 
             //Saving all the Data into an Object
-            if (userProfileUpload.equals(" ")) {
+            if (!userProfileUpload.equals(" ")) {
                 UserProfile Profile_Info = new UserProfile(personName, personGivenName, personFamilyName, personEmail, personId, userProfileUpload, personLatitude, personLongitude);
 
 
                 if (firebaseHelper.saveUserData(Profile_Info))
-                    Snackbar.make(findViewById(R.id.signin_Layout), "Authentication Success.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.signin_Layout), "Authentication Success." , Snackbar.LENGTH_SHORT).show();
+
 
 
                 else
