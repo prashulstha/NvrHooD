@@ -48,6 +48,11 @@ public class FirebaseHelper {
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 
+    boolean checkIt()
+    {
+       return true;
+    }
+
     public boolean saveUserData(UserProfile profileInfo){
 
 
