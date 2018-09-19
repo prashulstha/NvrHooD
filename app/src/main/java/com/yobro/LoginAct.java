@@ -150,7 +150,9 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
             //Saving all the Data into an Object
             if (!userProfileUpload.equals(" ")) {
+
                 UserProfile Profile_Info = new UserProfile(personName, personGivenName, personFamilyName, personEmail, personId, userProfileUpload, personLatitude, personLongitude);
+
 
 
                 if (firebaseHelper.saveUserData(Profile_Info))

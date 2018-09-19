@@ -26,6 +26,8 @@ public class FirebaseHelper {
     private String userID;
     private String returnUri;
 
+
+
     private FirebaseAuth getmAuth() {
         mAuth = FirebaseAuth.getInstance();
         return mAuth;
@@ -39,7 +41,7 @@ public class FirebaseHelper {
         return mUser;
     }
 
-    private FirebaseHelper(){
+    FirebaseHelper(){
 
         getmAuth();
         getmUser();
@@ -48,10 +50,7 @@ public class FirebaseHelper {
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 
-    boolean checkIt()
-    {
-       return true;
-    }
+
 
     public boolean saveUserData(UserProfile profileInfo){
 
@@ -97,6 +96,8 @@ public class FirebaseHelper {
         return returnUri;
 
     }
+
+
 
 
 }
