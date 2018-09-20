@@ -1,4 +1,4 @@
-package com.yobro;
+package com.yobro.JavaClasses;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yobro.JavaClasses.UserProfile;
 
 public class FirebaseHelper {
 
@@ -41,7 +42,7 @@ public class FirebaseHelper {
         return mUser;
     }
 
-    FirebaseHelper(){
+    public FirebaseHelper(){
 
         getmAuth();
         getmUser();

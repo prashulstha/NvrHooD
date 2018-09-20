@@ -1,4 +1,4 @@
-package com.yobro;
+package com.yobro.JavaClasses;
 
 import java.io.Serializable;
 
@@ -13,10 +13,10 @@ public class UserProfile implements Serializable{
     private String personLatitude;
     private String personLongitude;
 
+
     public UserProfile(){
 
     }
-
 
 
     public UserProfile(String personName, String personGivenName, String personFamilyName, String personEmail, String personId, String personPhoto, String personLatitude, String personLongitude) {
@@ -30,6 +30,7 @@ public class UserProfile implements Serializable{
         this.personLongitude = personLongitude;
 
     }
+
 
     public String getPersonName() {
         return personName;
