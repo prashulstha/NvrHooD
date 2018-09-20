@@ -16,5 +16,12 @@
     <string name="fbSign">Sign in with Fb</string>
     <string name="GSign">Sign in with Google</string>
     <string name="loading">Hang On</string>
+    <string name="title_activity_map_home">MapActivityHome</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
