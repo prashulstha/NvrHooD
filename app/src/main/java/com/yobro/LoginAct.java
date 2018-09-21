@@ -59,6 +59,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // [START initialize_auth]
+
         mAuth = FirebaseAuth.getInstance();
         userDatabase = FirebaseDatabase.getInstance().getReference().child("/Users");  //Getting Reference to the Child User of the Firebase
         userDatabase.keepSynced(true);   //Keeps the Database Synced
