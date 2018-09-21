@@ -31,7 +31,7 @@ public class MapActivityHome extends AppCompatActivity
         MapFragment mapFragment = new com.yobro.MapFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
-        replace.commit();
+        //replace.commit();
 
 
        /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -99,14 +99,14 @@ public class MapActivityHome extends AppCompatActivity
             // Handle the camera action
             MapFragment mapFragment = new MapFragment();
 
-        } else if (id == R.id.nav_inbox) {
+        } else if (id == R.id.nav_setting) {
 
 
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_explore) {
 
-        } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_signout) {
 
@@ -122,7 +122,7 @@ public class MapActivityHome extends AppCompatActivity
         super.onStart();
 
         FirebaseUser mUser = mAuth.getCurrentUser();
-        if(mUser == null){
+        if(mUser != null){
             Intent loginIntent = new Intent(getApplicationContext(), LoginAct.class);
             startActivity(loginIntent);
             finish();

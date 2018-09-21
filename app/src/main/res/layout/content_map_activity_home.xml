@@ -8,4 +8,9 @@
     tools:context=".MapActivityHome"
     tools:showIn="@layout/app_bar_map_activity_home">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/MapFrag"/>
+
 </android.support.constraint.ConstraintLayout>
