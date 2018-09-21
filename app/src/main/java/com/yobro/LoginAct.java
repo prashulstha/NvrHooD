@@ -108,7 +108,7 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
                             Log.d(TAG, "signInWithCredential:success");
                               updateUI();
                             //Start the Map Activity
-                            Intent homeMapIntent = new Intent(getApplicationContext(), MapActivityHome.class);
+                            Intent homeMapIntent = new Intent(LoginAct.this, MapActivityHome.class);
                             startActivity(homeMapIntent);
                             finish();
 
@@ -192,18 +192,24 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
         }
         else if(i == R.id.SignoutBtn){
             showProgressDialog();
-            FirebaseAuth.getInstance().signOut();
-            mGoogleSignInClient.signOut()
-                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // ...
-                            hideProgressDialog();
-                            Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
-                        }
-                    });
+            signOut();
 
-        }
+    }
+
+    }
+    public void signOut(){
+        FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        hideProgressDialog();
+                        Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+
     }
 
     @Override

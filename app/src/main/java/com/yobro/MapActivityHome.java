@@ -134,9 +134,9 @@ public class MapActivityHome extends AppCompatActivity
                             // ...
 
                             Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
-                            Intent homeMapIntent = new Intent(getApplicationContext(), LoginAct.class);
+                            Intent homeMapIntent = new Intent(MapActivityHome.this, LoginAct.class);
                             startActivity(homeMapIntent);
-                            finish();
+
                         }
                     });
 
@@ -152,8 +152,8 @@ public class MapActivityHome extends AppCompatActivity
         super.onStart();
 
         FirebaseUser mUser = mAuth.getCurrentUser();
-        if(mUser != null){
-            Intent loginIntent = new Intent(getApplicationContext(), LoginAct.class);
+        if(mUser == null){
+            Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
             startActivity(loginIntent);
             finish();
         }
