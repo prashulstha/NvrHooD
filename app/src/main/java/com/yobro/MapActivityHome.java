@@ -69,6 +69,7 @@ public class MapActivityHome extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         //Loading the Default Fragment
 
     }
@@ -133,7 +134,7 @@ public class MapActivityHome extends AppCompatActivity
                         public void onComplete(@NonNull Task<Void> task) {
                             // ...
 
-                            Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(android.R.id.content), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
                             Intent homeMapIntent = new Intent(MapActivityHome.this, LoginAct.class);
                             startActivity(homeMapIntent);
 
