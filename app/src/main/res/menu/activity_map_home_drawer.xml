@@ -7,19 +7,19 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Map" />
         <item
             android:id="@+id/nav_inbox"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Inbox" />
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="History" />
         <item
             android:id="@+id/nav_explore"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Explore" />
     </group>
 
     <item android:title="Communicate">
@@ -27,11 +27,11 @@
             <item
                 android:id="@+id/nav_setting"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Settings" />
             <item
                 android:id="@+id/nav_signout"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Sign Out" />
         </menu>
     </item>
 

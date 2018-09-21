@@ -22,10 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.yobro.JavaClasses.FirebaseHelper;
-import com.yobro.JavaClasses.UserProfile;
 
-public class LoginAct extends AppCompatActivity implements View.OnClickListener {
+public class LoginAct extends BaseActivity implements View.OnClickListener {
 
     //Variables Deceleration
     private String TAG = "Sign In Activity";
@@ -38,9 +36,6 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
     FirebaseAuth mAuth;
     DatabaseReference userDatabase;
     FirebaseHelper firebaseHelper;
-
-
-
 
 
 
@@ -100,6 +95,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
         // [START_EXCLUDE silent]
 
+
         // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -112,9 +108,9 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
                             Log.d(TAG, "signInWithCredential:success");
                               updateUI();
                             //Start the Map Activity
-                            Intent intent = new Intent(LoginAct.this , GoogleMaps.class);
-                            startActivity(intent);
-
+                            Intent homeMapIntent = new Intent(LoginAct.this, MapActivityHome.class);
+                            startActivity(homeMapIntent);
+                            finish();
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -195,17 +191,25 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
             signIn();
         }
         else if(i == R.id.SignoutBtn){
-            FirebaseAuth.getInstance().signOut();
-            mGoogleSignInClient.signOut()
-                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // ...
-                            Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
-                        }
-                    });
+            showProgressDialog();
+            signOut();
 
-        }
+    }
+
+    }
+    public void signOut(){
+        FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        hideProgressDialog();
+                        Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+
     }
 
     @Override

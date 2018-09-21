@@ -14,6 +14,7 @@
         android:layout_height="match_parent" />
 
 
+    <include layout="@layout/content_map_activity_home"/>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

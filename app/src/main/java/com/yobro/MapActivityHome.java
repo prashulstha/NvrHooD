@@ -2,6 +2,7 @@ package com.yobro;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -21,6 +27,7 @@ public class MapActivityHome extends AppCompatActivity
 
     //Firebase Variables
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,15 @@ public class MapActivityHome extends AppCompatActivity
         FragmentTransaction replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
         //replace.commit();
 
+// Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // [END config_signin]
+
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
        /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -52,6 +68,7 @@ public class MapActivityHome extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         //Loading the Default Fragment
 
@@ -110,6 +127,20 @@ public class MapActivityHome extends AppCompatActivity
 
         } else if (id == R.id.nav_signout) {
 
+            FirebaseAuth.getInstance().signOut();
+            mGoogleSignInClient.signOut()
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // ...
+
+                            Snackbar.make(findViewById(android.R.id.content), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                            Intent homeMapIntent = new Intent(MapActivityHome.this, LoginAct.class);
+                            startActivity(homeMapIntent);
+
+                        }
+                    });
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -123,7 +154,7 @@ public class MapActivityHome extends AppCompatActivity
 
         FirebaseUser mUser = mAuth.getCurrentUser();
         if(mUser == null){
-            Intent loginIntent = new Intent(getApplicationContext(), LoginAct.class);
+            Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
             startActivity(loginIntent);
             finish();
         }
