@@ -25,4 +25,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_google_maps">Map</string>
 
+
+    <string name="MapFrag">Hello Map fragment</string>
+
 </resources>

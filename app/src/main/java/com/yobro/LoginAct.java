@@ -51,6 +51,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
         // Button listeners
         findViewById(R.id.gSignInButton).setOnClickListener(this);
+        findViewById(R.id.SignoutBtn).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -63,6 +64,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // [START initialize_auth]
+
         mAuth = FirebaseAuth.getInstance();
         userDatabase = FirebaseDatabase.getInstance().getReference().child("/Users");  //Getting Reference to the Child User of the Firebase
         userDatabase.keepSynced(true);   //Keeps the Database Synced
@@ -188,6 +190,18 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
         int i = v.getId();
         if (i == R.id.gSignInButton) {
             signIn();
+        }
+        else if(i == R.id.SignoutBtn){
+            FirebaseAuth.getInstance().signOut();
+            mGoogleSignInClient.signOut()
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // ...
+                            Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                        }
+                    });
+
         }
     }
 
