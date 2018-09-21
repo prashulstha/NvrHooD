@@ -47,7 +47,7 @@ public class FirebaseHelper {
         getmAuth();
         getmUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        userDataBaseRef = firebaseDatabase.getReference("Users");
+
         storageReference = FirebaseStorage.getInstance().getReference();
     }
 
@@ -56,7 +56,7 @@ public class FirebaseHelper {
     public boolean saveUserData(UserProfile profileInfo){
 
 
-
+        userDataBaseRef = firebaseDatabase.getReference("Users");
 
         try{
 
@@ -68,6 +68,29 @@ public class FirebaseHelper {
             e.printStackTrace();
             return false;
         }
+
+    }
+
+    public boolean saveLocation(cordinates mcordinates)
+    {
+        String mlatitude, mlongtitude;
+        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("message");
+
+                myRef.setValue("Hello, World!"); */
+
+        userDataBaseRef = firebaseDatabase.getReference("Users");
+        try{
+
+            userDataBaseRef.child(userID).child("Location").setValue(mcordinates);
+
+            return true;
+
+        }catch (DatabaseException e){
+            e.printStackTrace();
+            return false;
+        }
+
 
     }
 

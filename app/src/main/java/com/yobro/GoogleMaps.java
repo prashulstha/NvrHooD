@@ -14,6 +14,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.cordinates;
 
 public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback
 {
@@ -22,6 +24,9 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     LocationListener locationListener;
+
+    //firebase helper
+    FirebaseHelper firebaseHelper = new FirebaseHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,6 +55,17 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback
             {
                 double latitude =location.getLatitude();
                 double longitude =location.getLongitude();
+
+                String mlatitude = Double.toString(latitude);
+                String mlongitude = Double.toString(longitude);
+
+                //sending cordinates as an object
+                cordinates  mcordinates = new cordinates(mlatitude,mlongitude);
+
+                firebaseHelper.saveLocation(mcordinates);
+
+                // Write a message to the database
+
 
             }
 

@@ -112,6 +112,9 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
                             Log.d(TAG, "signInWithCredential:success");
                               updateUI();
                             //Start the Map Activity
+                            Intent intent = new Intent(LoginAct.this , GoogleMaps.class);
+                            startActivity(intent);
+
 
                         } else {
                             // If sign in fails, display a message to the user.

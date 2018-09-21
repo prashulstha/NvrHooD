@@ -122,12 +122,12 @@ public class MapActivityHome extends AppCompatActivity
         super.onStart();
 
         FirebaseUser mUser = mAuth.getCurrentUser();
-        if(mUser != null){
+        if(mUser == null){
             Intent loginIntent = new Intent(getApplicationContext(), LoginAct.class);
             startActivity(loginIntent);
             finish();
         }
-        else
-            Snackbar.make(findViewById(R.id.signin_Layout), "Signed In", Snackbar.LENGTH_SHORT).show();
+
+            //Snackbar.make(findViewById(R.id.signin_Layout), "Signed In", Snackbar.LENGTH_SHORT).show();
     }
 }
