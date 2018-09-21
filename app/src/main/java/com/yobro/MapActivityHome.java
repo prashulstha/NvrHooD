@@ -134,6 +134,9 @@ public class MapActivityHome extends AppCompatActivity
                             // ...
 
                             Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                            Intent homeMapIntent = new Intent(getApplicationContext(), LoginAct.class);
+                            startActivity(homeMapIntent);
+                            finish();
                         }
                     });
 
