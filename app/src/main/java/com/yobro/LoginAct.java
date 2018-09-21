@@ -23,7 +23,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class LoginAct extends AppCompatActivity implements View.OnClickListener {
+public class LoginAct extends BaseActivity implements View.OnClickListener {
 
     //Variables Deceleration
     private String TAG = "Sign In Activity";
@@ -95,6 +95,7 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
 
         // [START_EXCLUDE silent]
 
+
         // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -107,6 +108,9 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
                             Log.d(TAG, "signInWithCredential:success");
                               updateUI();
                             //Start the Map Activity
+                            Intent homeMapIntent = new Intent(getApplicationContext(), MapActivityHome.class);
+                            startActivity(homeMapIntent);
+                            finish();
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -187,12 +191,14 @@ public class LoginAct extends AppCompatActivity implements View.OnClickListener 
             signIn();
         }
         else if(i == R.id.SignoutBtn){
+            showProgressDialog();
             FirebaseAuth.getInstance().signOut();
             mGoogleSignInClient.signOut()
                     .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             // ...
+                            hideProgressDialog();
                             Snackbar.make(findViewById(R.id.signin_Layout), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
                         }
                     });
