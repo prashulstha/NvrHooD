@@ -56,11 +56,14 @@ public class FirebaseHelper {
     public boolean saveUserData(UserProfile profileInfo){
 
 
+
+
         try{
 
             userDataBaseRef.child(userID).child("ProfileInfo").setValue(profileInfo);
 
             return true;
+
         }catch (DatabaseException e){
             e.printStackTrace();
             return false;
