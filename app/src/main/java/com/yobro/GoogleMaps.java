@@ -1,11 +1,15 @@
 package com.yobro;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -13,6 +17,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,12 +33,16 @@ import com.yobro.JavaClasses.cordinates;
 import java.io.IOException;
 import java.util.List;
 
-public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback {
+public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
+    private static final int MY_LOCATION_REQUEST_CODE = 0001;
     private GoogleMap mMap;
-    LocationManager locationManager;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    LocationListener locationListener;
+
+    //Location Variables
+    LocationRequest locationRequest;
+    LocationCallback locationCallback;
+    FusedLocationProviderClient fusedLocationProviderClient;
     double latitude;
     double longitude;
 
@@ -44,9 +57,7 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -54,70 +65,62 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback {
             ActivityCompat.requestPermissions(this, new String[]
                             {android.Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
+        } else {
+            buildLocationRequest();
+            buildLocationCallBack();
+
+
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+
+
         }
 
 
-        //using location listener
-        locationListener = new LocationListener() {
+
+    }
+
+    private void buildLocationCallBack() {
+        locationCallback = new LocationCallback() {
             @Override
-            public void onLocationChanged(Location location) {
-                 latitude = location.getLatitude();
-                 longitude = location.getLongitude();
-
-                String mlatitude = Double.toString(latitude);
-                String mlongitude = Double.toString(longitude);
-
-
-
-
-                //longitude = -94.14915;
-                //latitude = 45.55390;
-
-                //sending cordinates as an object
-                cordinates mcordinates = new cordinates(mlatitude, mlongitude);
-
-                //firebaseHelper.saveLocation(mcordinates);
-
-                Geocoder geocoder = new Geocoder(getApplicationContext());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-                    String result = addresses.get(0).getLocality() + ":";
-                    result += addresses.get(0).getCountryName();
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    Log.d("GoogleMapActivity", latLng.toString());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(result));
-                    mMap.setMaxZoomPreference(300);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f));
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                for (Location location : locationResult.getLocations()) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    Toast.makeText(GoogleMaps.this, Double.toString(latitude) + " / " +Double.toString(longitude),     Toast.LENGTH_LONG).show();
                 }
-                // Write a message to the database
-
-
             }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-
-
         };
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-         Toast.makeText(GoogleMaps.this, Double.toString(latitude), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]
+                            {android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
+            return;
+        }
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+    }
+
+    /*@Override
+    protected void onPause() {
+        super.onPause();
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }*/
+
+    private void buildLocationRequest() {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setSmallestDisplacement(10);
+
+
     }
 
     @Override
@@ -133,10 +136,58 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback {
 
 
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(latitude, longitude);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in MN"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            ActivityCompat.requestPermissions(this, new String[]
+                            {android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
+
+            return;
+        } else {
+
+            mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(this);
+            mMap.setOnMyLocationClickListener(this);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+            if (permissions.length == 1 &&
+                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    mMap.setMyLocationEnabled(true);
+                    return;
+                }
+
+            } else {
+                // Permission was denied. Display an error message.
+
+                Toast.makeText(GoogleMaps.this, "Permission Denied",     Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+        @Override
+        public void onMyLocationClick (@NonNull Location location){
+            Toast.makeText(this, "Current location:\n" + location, Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public boolean onMyLocationButtonClick () {
+            Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
+            // Return false so that we don't consume the event and the default behavior still occurs
+            // (the camera animates to the user's current position).
+            return false;
+        }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }
