@@ -27,5 +27,6 @@
 
 
     <string name="MapFrag">Hello Map fragment</string>
+    <string name="title_activity_google_map">Map</string>
 
 </resources>

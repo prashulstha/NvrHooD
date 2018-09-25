@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.UserProfile;
 
 public class LoginAct extends BaseActivity implements View.OnClickListener {
 

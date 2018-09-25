@@ -3,6 +3,8 @@
     package="com.yobro">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -21,7 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginAct"></activity>
+        <activity android:name=".LoginAct" />
         <activity android:name=".BaseActivity" />
         <activity
             android:name=".MapActivityHome"
@@ -41,13 +43,15 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
+        <activity
+            android:name=".GoogleMaps"
+            android:label="@string/title_activity_google_map" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".GoogleMaps"
-            android:label="@string/title_activity_google_maps"></activity>
+
     </application>
 
 </manifest>

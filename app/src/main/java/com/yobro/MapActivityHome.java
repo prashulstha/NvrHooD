@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.support.v4.app.Fragment;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,10 +36,10 @@ public class MapActivityHome extends AppCompatActivity
         setContentView(R.layout.activity_map_home);
 
 
-        MapFragment mapFragment = new com.yobro.MapFragment();
+        /*GoogleMaps mapFragment = new com.yobro.GoogleMaps();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
-        //replace.commit();
+        //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
+        //Replace.commit();*/
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -114,7 +115,7 @@ public class MapActivityHome extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-            MapFragment mapFragment = new MapFragment();
+            startActivity(new Intent(this, GoogleMaps.class));
 
         } else if (id == R.id.nav_setting) {
 
