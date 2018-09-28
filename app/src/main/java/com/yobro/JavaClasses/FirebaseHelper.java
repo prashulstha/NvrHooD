@@ -130,7 +130,7 @@ public class FirebaseHelper {
 
         try{
 
-            userDataBaseRef.child(userID).child("Location").child(userID).setValue(cord);
+            userDataBaseRef.child("Location").child(userID).setValue(cord);
 
             return true;
 

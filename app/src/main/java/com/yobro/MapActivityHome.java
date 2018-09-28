@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -80,24 +81,34 @@ public class MapActivityHome extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         onlineBtn = findViewById(R.id.onlineSwtich);
-        onlineBtn.setOnClickListener(new View.OnClickListener() {
+        onlineBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                makeUserOnline();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    makeUserOnline();
+                }
+                else
+                    makeUserOffline();
             }
         });
-
         //Loading the Default Fragment
 
     }
 
+    private void makeUserOffline() {
+        Snackbar.make(findViewById(android.R.id.content), "Set Offline", Snackbar.LENGTH_SHORT).show();
+    }
+
     private void makeUserOnline() {
 
-        String personLatitude = "53.2734";
+        String personLatitude = "53.00";
         String personLongitude = "-7.77832031";
 
         Coordinates cord = new Coordinates(personLatitude, personLongitude);
-        firebaseHelper.makeUserOnline(cord);
+
+        //if(firebaseHelper.makeUserOnline(cord))
+            Snackbar.make(findViewById(android.R.id.content), "Set Online", Snackbar.LENGTH_SHORT).show();
+
 
     }
 
@@ -143,8 +154,8 @@ public class MapActivityHome extends AppCompatActivity
         if (id == R.id.nav_home) {
             // Handle the camera action
             startActivity(new Intent(this, GoogleMaps.class));
-            //MapFragment googleMaps = new MapFragment();
-           // fragment = googleMaps;
+            //fragment = new MapFragment();
+
 
         } else if (id == R.id.nav_setting) {
 
@@ -175,9 +186,9 @@ public class MapActivityHome extends AppCompatActivity
 
         //FragmentManager fragmentManager = getSupportFragmentManager();
         //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
-//        Replace.commit();
+        //Replace.commit();
 
-        item.setChecked(true);
+        //item.setChecked(true);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

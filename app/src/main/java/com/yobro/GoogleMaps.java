@@ -16,13 +16,15 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
-    private static final int MY_LOCATION_REQUEST_CODE = 0001;
+    private static final int MY_LOCATION_REQUEST_CODE = 9001;
     private GoogleMap mMap;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -81,24 +83,7 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                            {android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_LOCATION_PERMISSION);
-            return;
-        }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-    }
-
-    /*@Override
-    protected void onPause() {
-        super.onPause();
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }*/
 
     private void buildLocationRequest() {
         locationRequest = new LocationRequest();
@@ -129,12 +114,13 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
                             {android.Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSION);
 
-            return;
         } else {
 
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
         }
     }
 
@@ -147,6 +133,7 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+
                     mMap.setMyLocationEnabled(true);
                     return;
                 }
@@ -157,6 +144,8 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
                 Toast.makeText(GoogleMaps.this, "Permission Denied",     Toast.LENGTH_LONG).show();
             }
         }
+        else
+            mMap.setMyLocationEnabled(true);
     }
 
 
