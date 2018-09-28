@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.Switch;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -22,6 +24,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.yobro.JavaClasses.Coordinates;
+import com.yobro.JavaClasses.FirebaseHelper;
 
 public class MapActivityHome extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,6 +33,10 @@ public class MapActivityHome extends AppCompatActivity
     //Firebase Variables
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private GoogleSignInClient mGoogleSignInClient;
+    FirebaseHelper firebaseHelper = new FirebaseHelper();
+
+    //Button
+    Switch onlineBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +69,7 @@ public class MapActivityHome extends AppCompatActivity
         });
 
     */
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -70,8 +79,25 @@ public class MapActivityHome extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        onlineBtn = findViewById(R.id.onlineSwtich);
+        onlineBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeUserOnline();
+            }
+        });
 
         //Loading the Default Fragment
+
+    }
+
+    private void makeUserOnline() {
+
+        String personLatitude = "53.2734";
+        String personLongitude = "-7.77832031";
+
+        Coordinates cord = new Coordinates(personLatitude, personLongitude);
+        firebaseHelper.makeUserOnline(cord);
 
     }
 
@@ -112,10 +138,13 @@ public class MapActivityHome extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
 
         if (id == R.id.nav_home) {
             // Handle the camera action
             startActivity(new Intent(this, GoogleMaps.class));
+            //MapFragment googleMaps = new MapFragment();
+           // fragment = googleMaps;
 
         } else if (id == R.id.nav_setting) {
 
@@ -144,8 +173,16 @@ public class MapActivityHome extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //FragmentManager fragmentManager = getSupportFragmentManager();
+        //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
+//        Replace.commit();
+
+        item.setChecked(true);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+
         return true;
     }
 

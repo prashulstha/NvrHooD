@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.yobro.JavaClasses.UserProfile;
 
 public class FirebaseHelper {
 
@@ -71,7 +70,7 @@ public class FirebaseHelper {
 
     }
 
-    public boolean saveLocation(cordinates mcordinates)
+    public boolean saveLocation(Coordinates mcordinates)
     {
         String mlatitude, mlongtitude;
         /*FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -125,6 +124,25 @@ public class FirebaseHelper {
     }
 
 
+    public boolean makeUserOnline(Coordinates cord){
+
+        userDataBaseRef = firebaseDatabase.getReference("Online Users");
+
+        try{
+
+            userDataBaseRef.child(userID).child("Location").child(userID).setValue(cord);
+
+            return true;
+
+        }catch (DatabaseException e){
+            e.printStackTrace();
+            return false;
+        }
+
+
+
+
+    }
 
 
 }

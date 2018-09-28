@@ -2,16 +2,16 @@ package com.yobro.JavaClasses;
 
 import java.io.Serializable;
 
-public class cordinates implements Serializable {
+public class Coordinates implements Serializable {
 
     //variable declaration
     private String latitude;
     private String longitude;
 
     //construction
-    public cordinates() { }
+    public Coordinates() { }
 
-    public cordinates(String latitude,String longitude)
+    public Coordinates(String latitude, String longitude)
     {
         this.latitude=latitude;
         this.longitude=longitude;

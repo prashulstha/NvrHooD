@@ -25,4 +25,14 @@
         app:headerLayout="@layout/nav_header_map_activity_home"
         app:menu="@menu/activity_map_home_drawer" />
 
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="top|right"
+        android:layout_margin="@dimen/fab_margin"
+        android:shadowColor="@android:color/white"
+        android:clickable="true"
+        android:id="@+id/onlineSwtich"
+
+        />
 </android.support.v4.widget.DrawerLayout>
