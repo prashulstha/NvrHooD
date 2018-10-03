@@ -15,7 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".GoogleMaps" />
+    <Switch
+        android:id="@+id/onlineSwtich"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_gravity="top|end"
+        android:shadowColor="@android:color/white"
 
+        />
 
 
 </FrameLayout>

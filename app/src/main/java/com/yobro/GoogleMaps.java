@@ -122,6 +122,7 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
         }
+
     }
 
 
@@ -144,8 +145,11 @@ public class GoogleMaps extends FragmentActivity implements OnMapReadyCallback, 
                 Toast.makeText(GoogleMaps.this, "Permission Denied",     Toast.LENGTH_LONG).show();
             }
         }
-        else
+        else {
             mMap.setMyLocationEnabled(true);
+
+        }
+
     }
 
 

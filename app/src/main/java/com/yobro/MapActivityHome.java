@@ -45,10 +45,10 @@ public class MapActivityHome extends AppCompatActivity
         setContentView(R.layout.activity_map_home);
 
 
-        /*GoogleMaps mapFragment = new com.yobro.GoogleMaps();
+        MapFragment mapFragment = new MapFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
-        //Replace.commit();*/
+        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
+        Replace.commit();
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -80,17 +80,7 @@ public class MapActivityHome extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        onlineBtn = findViewById(R.id.onlineSwtich);
-        onlineBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    makeUserOnline();
-                }
-                else
-                    makeUserOffline();
-            }
-        });
+
         //Loading the Default Fragment
 
     }
@@ -153,8 +143,8 @@ public class MapActivityHome extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-            startActivity(new Intent(this, GoogleMaps.class));
-            //fragment = new MapFragment();
+            //startActivity(new Intent(this, GoogleMaps.class));
+            fragment = new MapFragment();
 
 
         } else if (id == R.id.nav_setting) {
@@ -188,7 +178,7 @@ public class MapActivityHome extends AppCompatActivity
         //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
         //Replace.commit();
 
-        //item.setChecked(true);
+        item.setChecked(true);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -206,8 +196,7 @@ public class MapActivityHome extends AppCompatActivity
             Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
             startActivity(loginIntent);
             finish();
-        }
-
-            //Snackbar.make(findViewById(R.id.signin_Layout), "Signed In", Snackbar.LENGTH_SHORT).show();
+        }//else
+            //Snackbar.make(findViewById(android.R.id.content), "Signed In", Snackbar.LENGTH_SHORT).show();
     }
 }
