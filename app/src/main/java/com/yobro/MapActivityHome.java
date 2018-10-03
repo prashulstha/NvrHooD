@@ -1,10 +1,14 @@
 package com.yobro;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -13,10 +17,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.Fragment;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,8 +29,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.UserProfile;
+
+import org.w3c.dom.Text;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapActivityHome extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,19 +46,35 @@ public class MapActivityHome extends AppCompatActivity
     private GoogleSignInClient mGoogleSignInClient;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
 
+    private Toolbar mToolbar;
+
     //Button
     Switch onlineBtn;
 
+    //Fragment
+    Fragment fragment = new MapFragment();
+
+    //UserProfile Object to Store Retrieved user Info from Database
+    String key = "UserData";
+
+
+    //Navigation Bar Variables
+    TextView user_Name;
+    TextView user_Email;
+    CircleImageView userProfileView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_home);
 
+        //mToolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(mToolbar);
 
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
         MapFragment mapFragment = new MapFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
-        Replace.commit();
+        Replace.addToBackStack(null).commit();
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -79,9 +105,29 @@ public class MapActivityHome extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        View headerView = navigationView.getHeaderView(0);
+        user_Name = headerView.findViewById(R.id.userFirstName);
+        user_Email = headerView.findViewById(R.id.userEmail);
+        userProfileView = headerView.findViewById(R.id.userProfilePic);
 
         //Loading the Default Fragment
+        getUserProfile();
+    }
+
+    private void getUserProfile() {
+
+        UserProfile retrievedUserInfo = firebaseHelper.getUserInfo();
+        Bundle bundle = new Bundle();
+
+        user_Name.setText(retrievedUserInfo.getPersonName());
+        user_Email.setText(retrievedUserInfo.getPersonEmail());
+        /*Uri uri = Uri.parse(retrievedUserInfo.getPersonPhoto());
+        Picasso.get()
+                .load(uri)
+                .noFade()
+                .into(userProfileView);*/
+        bundle.putSerializable(key, retrievedUserInfo);
+        fragment.setArguments(bundle);
 
     }
 
@@ -139,7 +185,7 @@ public class MapActivityHome extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
+
 
         if (id == R.id.nav_home) {
             // Handle the camera action
@@ -158,20 +204,7 @@ public class MapActivityHome extends AppCompatActivity
 
         } else if (id == R.id.nav_signout) {
 
-            FirebaseAuth.getInstance().signOut();
-            mGoogleSignInClient.signOut()
-                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            // ...
-
-                            Snackbar.make(findViewById(android.R.id.content), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
-                            Intent homeMapIntent = new Intent(MapActivityHome.this, LoginAct.class);
-                            startActivity(homeMapIntent);
-
-                        }
-                    });
-
+            signOutUser();
         }
 
         //FragmentManager fragmentManager = getSupportFragmentManager();
@@ -179,12 +212,33 @@ public class MapActivityHome extends AppCompatActivity
         //Replace.commit();
 
         item.setChecked(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //
+            // item.setIconTintMode(R.color.colorAccent);
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
 
         return true;
+    }
+
+    private void signOutUser() {
+
+        FirebaseAuth.getInstance().signOut();
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+
+                        Snackbar.make(findViewById(android.R.id.content), "Sign Out Successful", Snackbar.LENGTH_SHORT).show();
+                        Intent homeMapIntent = new Intent(MapActivityHome.this, LoginAct.class);
+                        startActivity(homeMapIntent);
+
+                    }
+                });
     }
 
     @Override
@@ -199,4 +253,6 @@ public class MapActivityHome extends AppCompatActivity
         }//else
             //Snackbar.make(findViewById(android.R.id.content), "Signed In", Snackbar.LENGTH_SHORT).show();
     }
+
+
 }

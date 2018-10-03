@@ -1,17 +1,25 @@
 package com.yobro;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.internal.Constants;
@@ -28,12 +37,15 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,6 +53,8 @@ import com.google.android.gms.tasks.Task;
 import com.yobro.JavaClasses.Coordinates;
 
 import java.util.concurrent.Executor;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
 
@@ -65,11 +79,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     boolean mRequestingLocationUpdates;
     boolean mLocationPermissionGranted = false;
-    Location mLastKnownLocation;
+
 
 
     double latitude;
     double longitude;
+
+    Dialog dialog;
 
     private static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 
@@ -92,6 +108,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             map = getArguments().getString(ARG_PARAM1);
 
         }
+        dialog = new Dialog(getContext());
     }
 
     @Override
@@ -267,6 +284,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            mMap.isIndoorEnabled();
             getDeviceLocation();
             if (mapView != null &&
                     mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -281,7 +299,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 layoutParams.setMargins(0, 0, 30, 30);
             }
         }
-
     }
 
 
@@ -329,6 +346,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                 new LatLng(location.getLatitude(),
                                         location.getLongitude()), DEFAULT_ZOOM));
 
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        //When Map Loads Successfully
+                        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                            @Override
+                            public void onMapLoaded() {
+
+                                LatLng customMarkerLocationOne = new LatLng( latitude, longitude);
+                                LatLng customMarkerLocationTwo = new LatLng(latitude + 0.0005, longitude + .0010);
+                                LatLng customMarkerLocationThree = new LatLng(latitude + 0.009, longitude + .0020);
+
+
+                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationOne).
+                                        icon(BitmapDescriptorFactory.fromBitmap(
+                                                createCustomMarker(getActivity(),R.drawable.john,"John"))));
+                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationTwo).
+                                        icon(BitmapDescriptorFactory.fromBitmap(
+                                                createCustomMarker(getActivity(),R.drawable.john,"Mary Jane"))));
+
+                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationThree).
+                                        icon(BitmapDescriptorFactory.fromBitmap(
+                                                createCustomMarker(getActivity(),R.drawable.john,"Janet John"))));
+
+                                //LatLngBound will cover all your marker on Google Maps
+                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                builder.include(customMarkerLocationOne); //Taking Point A (First LatLng)
+                                builder.include(customMarkerLocationThree); //Taking Point B (Second LatLng)
+                                LatLngBounds bounds = builder.build();
+                                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+                                mMap.moveCamera(cu);
+                                mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+                            }
+                        });
                     }
                 });
 
@@ -342,6 +392,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onMyLocationClick (@NonNull Location location){
         Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
+        dialog.setContentView(R.layout.custom_popup);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
     }
 
     @Override
@@ -352,6 +405,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return false;
     }
 
+
+    public static Bitmap createCustomMarker(Context context, @DrawableRes int resource, String _name) {
+
+        View marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
+
+        CircleImageView markerImage = (CircleImageView) marker.findViewById(R.id.user_dp);
+        markerImage.setImageResource(resource);
+        TextView txt_name = (TextView)marker.findViewById(R.id.name);
+        txt_name.setText(_name);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        marker.setLayoutParams(new ViewGroup.LayoutParams(52, ViewGroup.LayoutParams.WRAP_CONTENT));
+        marker.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        marker.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        marker.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(marker.getMeasuredWidth(), marker.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        marker.draw(canvas);
+
+        return bitmap;
+    }
 
 
 
