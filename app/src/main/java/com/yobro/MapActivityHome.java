@@ -36,6 +36,8 @@ import com.yobro.JavaClasses.UserProfile;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapActivityHome extends AppCompatActivity
@@ -55,7 +57,8 @@ public class MapActivityHome extends AppCompatActivity
     Fragment fragment = new MapFragment();
 
     //UserProfile Object to Store Retrieved user Info from Database
-    String key = "UserData";
+    private final static String key = "UserData";
+    ArrayList<String> retrieveInfo = new ArrayList<>();
 
 
     //Navigation Bar Variables
@@ -67,14 +70,12 @@ public class MapActivityHome extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_home);
 
-        //mToolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(mToolbar);
 
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
-        MapFragment mapFragment = new MapFragment();
+        //Loading the Default Fragment
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, mapFragment);
-        Replace.addToBackStack(null).commit();
+        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+        Replace.commit();
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,24 +110,23 @@ public class MapActivityHome extends AppCompatActivity
         user_Name = headerView.findViewById(R.id.userFirstName);
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
-
-        //Loading the Default Fragment
         getUserProfile();
     }
 
     private void getUserProfile() {
 
-        UserProfile retrievedUserInfo = firebaseHelper.getUserInfo();
+
+        retrieveInfo = firebaseHelper.getUserInfo();
         Bundle bundle = new Bundle();
 
-        user_Name.setText(retrievedUserInfo.getPersonName());
-        user_Email.setText(retrievedUserInfo.getPersonEmail());
-        /*Uri uri = Uri.parse(retrievedUserInfo.getPersonPhoto());
+        user_Name.setText(retrieveInfo.get(0));
+        user_Email.setText(retrieveInfo.get(2));
+        Uri uri = Uri.parse(retrieveInfo.get(1));
         Picasso.get()
                 .load(uri)
                 .noFade()
-                .into(userProfileView);*/
-        bundle.putSerializable(key, retrievedUserInfo);
+                .into(userProfileView);
+        bundle.putStringArrayList(key, retrieveInfo);
         fragment.setArguments(bundle);
 
     }
@@ -209,7 +209,7 @@ public class MapActivityHome extends AppCompatActivity
 
         //FragmentManager fragmentManager = getSupportFragmentManager();
         //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
-        //Replace.commit();
+        //Replace.addToBackStack(null).commit();
 
         item.setChecked(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

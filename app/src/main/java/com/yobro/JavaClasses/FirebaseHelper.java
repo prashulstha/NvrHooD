@@ -18,6 +18,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+
 public class FirebaseHelper {
 
     //Firebase Variables
@@ -145,26 +147,23 @@ public class FirebaseHelper {
 
     }
 
-    public UserProfile getUserInfo(){
+    public ArrayList<String> getUserInfo(){
 
-
-
+        firebaseDatabase = FirebaseDatabase.getInstance();
         userDataBaseRef = firebaseDatabase.getReference();
+        ArrayList<String> userInfo = new ArrayList<>();
+
+        FirebaseAuth mauth = FirebaseAuth.getInstance();
+        FirebaseUser user = mauth.getCurrentUser();
+        final String id = user.getUid();
 
 
-        userDataBaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                profileFromDatabse = dataSnapshot.child("Users").child(userID).child("ProfileInfo").getValue(UserProfile.class);
-            }
+        userInfo.add(user.getDisplayName());
+        Uri photoUri = user.getPhotoUrl();
+        userInfo.add(photoUri.toString());
+        userInfo.add(user.getEmail());
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        return profileFromDatabse;
+        return userInfo;
     }
 
 }

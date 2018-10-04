@@ -4,14 +4,19 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.ResultReceiver;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,8 +55,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
+import com.yobro.JavaClasses.FirebaseHelper;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -64,7 +72,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9901;
 
 
-    private String map;
+    private String userProfilePic;
+    private String userName;
 
     private static final int MY_LOCATION_REQUEST_CODE = 9001;
     private GoogleMap mMap;
@@ -92,9 +101,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     Context context = getActivity();
 
     private final static String TAG = "GOOGLE MAP ACTIVITY";
+    private final static String key = "UserData";
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-    private Switch aSwitch;
+    private static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
+    private static final String LOCATION_ADDRESS_KEY = "location-address";
+
     private View mapView;
+
+    private Location mLastLocation;
+
+    /**
+     * Tracks whether the user has requested an address. Becomes true when the user requests an
+     * address and false when the address (or an error message) is delivered.
+     */
+    private boolean mAddressRequested;
+
+    /**
+     * The formatted location address.
+     */
+    private String mAddressOutput;
+
+    /**
+     * Receiver registered with this activity to get the response from FetchAddressIntentService.
+     */
+    private AddressResultReceiver mResultReceiver;
+
+    /**
+     * Displays the location address.
+     */
+    private TextView mLocationAddressTextView;
 
     public MapFragment() {
         // Required empty public constructor
@@ -105,8 +141,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            map = getArguments().getString(ARG_PARAM1);
-
+            FirebaseHelper firebaseHelper = new FirebaseHelper();
+            //User Info From Activity
+            List<String> list = firebaseHelper.getUserInfo();
+            if (list != null) {
+                userName = list.get(0);
+                userProfilePic = list.get(1);
+            }
         }
         dialog = new Dialog(getContext());
     }
@@ -128,7 +169,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mapFragment.getMapAsync(this);
 
 
-        //updateValuesFromBundle(savedInstanceState);
+
         // Construct a GeoDataClient.
         //mGeoDataClient = Places.getGeoDataClient(this, null);
 
@@ -152,8 +193,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         }
 
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        mAddressRequested = false;
+        mAddressOutput = "";
+        updateValuesFromBundle(savedInstanceState);
 
-        aSwitch = view.findViewById(R.id.onlineSwtich);
+        Switch aSwitch = view.findViewById(R.id.onlineSwtich);
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -167,13 +212,78 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
-   /*For saving an instance of the activity
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
-                mRequestingLocationUpdates);
-        super.onSaveInstanceState(outState);
-    }*/
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save whether the address has been requested.
+        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
+
+        // Save the address string.
+        savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // Check savedInstanceState to see if the address was previously requested.
+            if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
+                mAddressRequested = savedInstanceState.getBoolean(ADDRESS_REQUESTED_KEY);
+            }
+            // Check savedInstanceState to see if the location address string was previously found
+            // and stored in the Bundle. If it was found, display the address string in the UI.
+            if (savedInstanceState.keySet().contains(LOCATION_ADDRESS_KEY)) {
+                mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
+                showSnackbar(mAddressOutput);
+            }
+        }
+    }
+
+    /**
+     * Receiver for data sent from FetchAddressIntentService.
+     */
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        /**
+         *  Receives data sent from FetchAddressIntentService and updates the UI in MainActivity.
+         */
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(com.yobro.Constants.RESULT_DATA_KEY);
+            showSnackbar(mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == com.yobro.Constants.SUCCESS_RESULT) {
+                showSnackbar(getString(R.string.address_found));
+            }
+
+            // Reset. Enable the Fetch Address button and stop showing the progress bar.
+            mAddressRequested = false;
+
+        }
+    }
+
+    private void startIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(getActivity(), FetchAddressIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(com.yobro.Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(com.yobro.Constants.LOCATION_DATA_EXTRA, mLastLocation);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        getActivity().startService(intent);
+    }
+
+
+
 
     private void makeUserOffline() {
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Offline", Snackbar.LENGTH_SHORT).show();
@@ -251,17 +361,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private boolean checkPermission() {
 
-        if (ContextCompat.checkSelfPermission(context.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-        } else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-
-        return mLocationPermissionGranted;
+        int permissionState = ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
 
     }
 
@@ -284,7 +386,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            mMap.isIndoorEnabled();
+            mMap.setBuildingsEnabled(true);
+            mMap.setIndoorEnabled(true);
             getDeviceLocation();
             if (mapView != null &&
                     mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -303,7 +406,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MY_LOCATION_REQUEST_CODE) {
             if (permissions.length == 1 &&
                     permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
@@ -348,6 +451,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+                        mLastLocation = location;
+
                         //When Map Loads Successfully
                         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                             @Override
@@ -360,14 +465,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
                                 mMap.addMarker(new MarkerOptions().position(customMarkerLocationOne).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),R.drawable.john,"John"))));
+                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),userName))));
                                 mMap.addMarker(new MarkerOptions().position(customMarkerLocationTwo).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),R.drawable.john,"Mary Jane"))));
+                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Mary Jane"))));
 
                                 mMap.addMarker(new MarkerOptions().position(customMarkerLocationThree).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),R.drawable.john,"Janet John"))));
+                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Janet John"))));
 
                                 //LatLngBound will cover all your marker on Google Maps
                                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -377,6 +482,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
                                 mMap.moveCamera(cu);
                                 mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+
+
+                                //startIntentService();
+
                             }
                         });
                     }
@@ -392,8 +501,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onMyLocationClick (@NonNull Location location){
         Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
+       /* if(mLastLocation != null)
+            startIntentService();
+        mAddressRequested = true;
+*/
+
         dialog.setContentView(R.layout.custom_popup);
+        TextView add =  dialog.findViewById(R.id.DailogAddress);
+        //add.setText(mAddressOutput);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         dialog.show();
     }
 
@@ -406,12 +523,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
 
-    public static Bitmap createCustomMarker(Context context, @DrawableRes int resource, String _name) {
+    public static Bitmap createCustomMarker(Context context, Uri imageUri, String _name) {
 
         View marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
 
         CircleImageView markerImage = (CircleImageView) marker.findViewById(R.id.user_dp);
-        markerImage.setImageResource(resource);
+        Picasso.get().load(imageUri).noFade().into(markerImage);
         TextView txt_name = (TextView)marker.findViewById(R.id.name);
         txt_name.setText(_name);
 
@@ -428,6 +545,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return bitmap;
     }
 
+    private void showSnackbar(final String text) {
+        View container = getActivity().findViewById(android.R.id.content);
+        if (container != null) {
+            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
+        }
+    }
 
 
 }
