@@ -200,8 +200,6 @@ public class MapActivityHome extends AppCompatActivity
 
         } else if (id == R.id.nav_explore) {
 
-        } else if (id == R.id.nav_setting) {
-
         } else if (id == R.id.nav_signout) {
 
             signOutUser();

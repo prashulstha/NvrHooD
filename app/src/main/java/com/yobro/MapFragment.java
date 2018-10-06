@@ -60,6 +60,7 @@ import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -83,6 +84,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     LocationRequest locationRequest;
     LocationCallback locationCallback;
     FusedLocationProviderClient fusedLocationProviderClient;
+    Geocoder geocoder;
     GeofencingClient mGeoDataClient;
     //PlaceDetectionClient mPlaceDetectionClient;
 
@@ -110,6 +112,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private View mapView;
 
     private Location mLastLocation;
+
+
 
     /**
      * Tracks whether the user has requested an address. Becomes true when the user requests an
@@ -175,6 +179,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         // Construct a PlaceDetectionClient.
         //mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
@@ -508,7 +516,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         dialog.setContentView(R.layout.custom_popup);
         TextView add =  dialog.findViewById(R.id.DailogAddress);
-        //add.setText(mAddressOutput);
+        CircleImageView imageView = dialog.findViewById(R.id.profile_image);
+        Picasso.get().load(Uri.parse(userProfilePic)).noFade().into(imageView);
+        add.setText(mAddressOutput);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         dialog.show();
