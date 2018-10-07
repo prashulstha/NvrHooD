@@ -8,10 +8,13 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
+
     <include
         layout="@layout/app_bar_map_activity_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
 
 
@@ -25,6 +28,7 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_map_activity_home"
         app:menu="@menu/activity_map_home_drawer" />
+
 
 
 
