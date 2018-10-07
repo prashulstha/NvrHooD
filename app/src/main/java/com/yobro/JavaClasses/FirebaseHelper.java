@@ -2,6 +2,7 @@ package com.yobro.JavaClasses;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +27,7 @@ public class FirebaseHelper {
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
     private DatabaseReference userDataBaseRef;
+
     private FirebaseDatabase firebaseDatabase;
     private final StorageReference storageReference;
     private String userID;
@@ -130,13 +132,15 @@ public class FirebaseHelper {
     }
 
 
+
     public boolean makeUserOnline(Coordinates cord){
 
         userDataBaseRef = firebaseDatabase.getReference("Online Users");
 
+
         try{
 
-            userDataBaseRef.child("Location").child(userID).setValue(cord);
+            userDataBaseRef.child(userID).setValue(cord);
 
             return true;
 
@@ -147,27 +151,80 @@ public class FirebaseHelper {
 
     }
 
+    public void makeUserOffline()
+    {
+        userDataBaseRef = firebaseDatabase.getReference("Online Users");
+        try
+        {
+            userDataBaseRef.child(userID).removeValue();
+        }
+        catch (DatabaseException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
     public ArrayList<String> getUserInfo(){
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         userDataBaseRef = firebaseDatabase.getReference();
         ArrayList<String> userInfo = new ArrayList<>();
 
-        FirebaseAuth mauth = FirebaseAuth.getInstance();
-        FirebaseUser user = mauth.getCurrentUser();
+        FirebaseAuth mauth = getmAuth();
+        FirebaseUser user = getmUser();
+        final String id = user.getUid();
 
 
-        if (user != null) {
-            userInfo.add(user.getDisplayName());
-            Uri photoUri = user.getPhotoUrl();
-            if (photoUri != null) {
-                userInfo.add(photoUri.toString());
-            }
-            userInfo.add(user.getEmail());
-        }
-
+        userInfo.add(mUser.getDisplayName());
+        Uri photoUri = mUser.getPhotoUrl();
+        userInfo.add(photoUri.toString());
+        userInfo.add(mUser.getEmail());
 
         return userInfo;
     }
+
+
+    public ArrayList<String> getUserInformation(final String userID){
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        userDataBaseRef = firebaseDatabase.getReference("Users");
+        final ArrayList<String> userInfo = new ArrayList<>();
+
+        FirebaseAuth mauth = getmAuth();
+        FirebaseUser user = getmUser();
+        final String id = user.getUid();
+
+        userDataBaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChild(userID))
+                {
+                    Log.d(userID,"Checking if it is userID");
+                    UserProfile proInfo = dataSnapshot.child(userID).getValue(UserProfile.class);
+
+                    userInfo.add(proInfo.getPersonName());
+                    userInfo.add(proInfo.getPersonPhoto());
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        userInfo.add(mUser.getDisplayName());
+        Uri photoUri = mUser.getPhotoUrl();
+        userInfo.add(photoUri.toString());
+        userInfo.add(mUser.getEmail());
+
+        return userInfo;
+    }
+
+
+
+
 
 }
