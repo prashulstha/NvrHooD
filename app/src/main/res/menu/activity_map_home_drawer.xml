@@ -22,7 +22,7 @@
             android:title="Explore" />
     </group>
 
-    <item android:title="Other">
+    <item android:title="Other ">
         <menu>
             <item
                 android:id="@+id/nav_setting"
