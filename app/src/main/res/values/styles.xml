@@ -9,6 +9,9 @@
         <item name="android:navigationBarColor">?android:attr/colorPrimaryDark</item>
         <item name="android:statusBarColor">@color/common_google_signin_btn_text_dark_disabled
         </item>
+
+        <item name="android:fontFamily">@font/maven_pro_medium</item>
+        <item name="fontFamily">@font/maven_pro_medium</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

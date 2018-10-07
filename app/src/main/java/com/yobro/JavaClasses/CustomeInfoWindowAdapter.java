@@ -1,10 +1,14 @@
 package com.yobro.JavaClasses;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -14,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import com.yobro.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,17 +28,23 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View mWindow;
     private Context mContext;
-    Geocoder geocoder;
+    private Geocoder geocoder;
+    private FirebaseHelper firebaseHelper = new FirebaseHelper();
+    private ArrayList<String> retrieveInfo = new ArrayList<>();
+    SharedPreferences preferences;
 
     public CustomeInfoWindowAdapter(Context context) {
         mContext = context;
         mWindow = LayoutInflater.from(context).inflate(R.layout.custom_popup, null);
         geocoder = new Geocoder(context, Locale.getDefault());
+        preferences = context.getSharedPreferences("YoBro", Context.MODE_PRIVATE);
     }
 
-    private void rendowWindowText(Marker marker, View view){
+    private void rendowWindowText(Marker marker, final View view){
         TextView dialogName = view.findViewById(R.id.DailogName);
         TextView dialogAddress = view.findViewById(R.id.DailogAddress);
+        final TextView dialogActivity = view.findViewById(R.id.daialogActivity);
+        final EditText dialogEditActivity = view.findViewById(R.id.daialogEditActivity);
 
         CircleImageView imageView = view.findViewById(R.id.profile_image);
 
@@ -42,12 +53,35 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         try {
             List<Address> addresses = geocoder.getFromLocation(cordToAdd.latitude, cordToAdd.longitude, 1);
-            addressInString = addresses.get(0).getAddressLine(1);
+            addressInString = addresses.get(0).getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //Picasso.get().load(parseduserProfilepic).noFade().into(imageView);
+        String activity = preferences.getString("Activity", "Tell us what you are doing.");
+
+
+        dialogActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogActivity.setVisibility(View.INVISIBLE);
+                dialogEditActivity.setVisibility(View.VISIBLE);
+
+                String act = dialogActivity.getText().toString().trim();
+
+                preferences.edit().putString("Activity", act).apply();
+            }
+        });
+
+        activity = preferences.getString("Activity", "Tell us what you are doing.");
+        if(getUserProfile()){
+            dialogName.setText(retrieveInfo.get(0));
+            dialogActivity.setText(activity);
+            Uri parseduserProfilepic = Uri.parse(retrieveInfo.get(1));
+            Picasso.get().load(parseduserProfilepic).noFade().into(imageView);
+        }
+
+
         dialogAddress.setText(addressInString);
     }
 
@@ -63,5 +97,16 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     public View getInfoContents(Marker marker) {
         rendowWindowText(marker, mWindow);
         return mWindow;
+    }
+
+    private boolean getUserProfile() {
+
+
+        retrieveInfo = firebaseHelper.getUserInfo();
+        if(retrieveInfo!= null)
+            return true;
+        else
+            return false;
+
     }
 }
