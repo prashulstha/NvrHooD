@@ -55,10 +55,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.UserProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
@@ -90,6 +97,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     boolean mRequestingLocationUpdates;
     boolean mLocationPermissionGranted = false;
+    static boolean calledAlready = false;
 
 
 
@@ -135,6 +143,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
      * Displays the location address.
      */
     private TextView mLocationAddressTextView;
+    FirebaseHelper firebaseHelper = new FirebaseHelper();
+
+
+    //to retrieve array of cordinates from database
+   // ArrayList<Coordinates> latlong = new ArrayList<>();
+    private List<LatLng> locationList;
+    private List<String> userKeys;
+    DatabaseReference userDataBaseRef;
+    DatabaseReference muserDataBaseRef;
+    FirebaseDatabase firebaseDatabase;
+
+     String mlatitude;
+     String mlongitude;
+
+
 
     public MapFragment() {
         // Required empty public constructor
@@ -146,6 +169,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             FirebaseHelper firebaseHelper = new FirebaseHelper();
+
             //User Info From Activity
             List<String> list = firebaseHelper.getUserInfo();
             if (list != null) {
@@ -154,6 +178,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         }
         dialog = new Dialog(getContext());
+
     }
 
     @Override
@@ -179,6 +204,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         // Construct a PlaceDetectionClient.
         //mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+
 
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
 
@@ -210,12 +239,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                if (isChecked)
+                {
                     makeUserOnline();
                 } else
                     makeUserOffline();
             }
         });
+
 
 
     }
@@ -293,22 +324,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
 
-    private void makeUserOffline() {
+    private void makeUserOffline()
+    {
+        firebaseHelper.makeUserOffline();
         Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Offline", Snackbar.LENGTH_SHORT).show();
+        getDeviceLocation();
     }
 
-    private void makeUserOnline() {
+    private void makeUserOnline()
+    {
 
-        String personLatitude = "53.00";
-        String personLongitude = "-7.77832031";
+
+        String personLatitude = Double.toString(mLastLocation.getLatitude());
+        String personLongitude = Double.toString(mLastLocation.getLongitude());
+
+
 
         Coordinates cord = new Coordinates(personLatitude, personLongitude);
 
-        //if(firebaseHelper.makeUserOnline(cord))
-        Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Online", Snackbar.LENGTH_SHORT).show();
+        if(firebaseHelper.makeUserOnline(cord))
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Online", Snackbar.LENGTH_SHORT).show();
 
 
     }
+
 
 
     private void buildLocationCallBack() {
@@ -319,7 +358,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 for (Location location : locationResult.getLocations()) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
-                    Toast.makeText(getContext(), Double.toString(latitude) + " / " +Double.toString(longitude),     Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), Double.toString(latitude) + " / " +Double.toString(longitude),     Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -350,7 +389,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if (mRequestingLocationUpdates)
+            stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
@@ -448,10 +488,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
 
+
+
         try {
                 fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
-                    public void onSuccess(Location location) {
+                    public void onSuccess(final Location location) {
+                        locationList = new ArrayList<>();
 
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(location.getLatitude(),
@@ -459,40 +502,149 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+                        /*//to retrieve array of cordinates from database
+                        ArrayList<Coordinates> latlong = new ArrayList<>();
+
+                        latlong =firebaseHelper.getLatLong();
+                        Coordinates mvalue = latlong.get(0);
+                        String mlatitude = mvalue.getLatitude();
+                        String mlongitude = mvalue.getLongitude();
+
+                        latitude = Double.parseDouble(mlatitude);
+                        longitude = Double.parseDouble(mlongitude);*/
                         mLastLocation = location;
+
+
+
+
+                        userKeys = new ArrayList<>();
+
 
                         //When Map Loads Successfully
                         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                             @Override
-                            public void onMapLoaded() {
-
-                                LatLng customMarkerLocationOne = new LatLng( latitude, longitude);
-                                LatLng customMarkerLocationTwo = new LatLng(latitude + 0.0005, longitude + .0010);
-                                LatLng customMarkerLocationThree = new LatLng(latitude + 0.009, longitude + .0020);
+                            public void onMapLoaded()
+                            {
 
 
-                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationOne).
-                                        icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),userName))));
-                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationTwo).
-                                        icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Mary Jane"))));
 
-                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationThree).
-                                        icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Janet John"))));
+                                userDataBaseRef = firebaseDatabase.getReference("Online Users");
 
-                                //LatLngBound will cover all your marker on Google Maps
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                builder.include(customMarkerLocationOne); //Taking Point A (First LatLng)
-                                builder.include(customMarkerLocationThree); //Taking Point B (Second LatLng)
-                                LatLngBounds bounds = builder.build();
-                                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
-                                mMap.moveCamera(cu);
-                                mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+                                userDataBaseRef.keepSynced(true);
+
+                                muserDataBaseRef = firebaseDatabase.getReference("Users");
+                                muserDataBaseRef.keepSynced(true);
 
 
-                                //startIntentService();
+
+                                userDataBaseRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot)
+                                    {
+                                        for (DataSnapshot ds: dataSnapshot.getChildren())
+                                        {
+                                            //User Info From Activity
+
+
+
+
+                                            Coordinates cord = ds.getValue(Coordinates.class);
+
+                                                mlatitude = cord.getLatitude();
+                                                mlongitude = cord.getLongitude();
+
+                                                latitude = Double.parseDouble(mlatitude);
+                                                longitude = Double.parseDouble(mlongitude);
+                                                //locationList.add(new LatLng(latitude,longitude));
+
+
+                                            final LatLng latLng = new LatLng(latitude, longitude);
+
+
+                                            mMap.addMarker(new MarkerOptions().position(latLng).title("Title can be anything"));
+
+
+                                            final String key = ds.getKey();
+                                            userKeys.add(key);
+
+                                            Log.d(key, "This is User Key From List");
+
+                                            //function to get the information of users
+                                            muserDataBaseRef.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot ds)
+                                                {
+                                                    if(ds.hasChild(key))
+                                                    {
+                                                        UserProfile proInfo = ds.child(key).child("ProfileInfo").getValue(UserProfile.class);
+
+                                                            userProfilePic = proInfo.getPersonPhoto();
+                                                            userName = proInfo.getPersonName();
+                                                            Log.d(userProfilePic,"User Pic1");
+                                                            Log.d(userName,"user Name1la");
+
+
+                                                       //     userProfilePic = "https://images.idgesg.net/images/article/2017/08/android_robot_logo_by_ornecolorada_cc0_via_pixabay1904852_wide-100732483-large.jpg";
+
+
+
+                                                        Uri parsedUri = Uri.parse(userProfilePic);
+
+
+                                                        mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromBitmap(createCustomMarker(getActivity(),parsedUri, userName))));
+
+                                                    }
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError)
+                                                {
+
+                                                }
+                                            });
+
+
+
+
+                                        }
+
+
+                                    }
+
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        Toast.makeText(getContext(), "Coudlnt Load Locations.", Toast.LENGTH_SHORT).show();
+                                    }
+
+
+
+
+                                });
+
+//                                mMap.addMarker(new MarkerOptions().position(locationList.get(0)).title("Title can be anything"));
+
+                                /*
+
+                                for(LatLng latLng: locationList) {
+                                    mMap.addMarker(new MarkerOptions().position(latLng).title("Title can be anything"));
+
+
+                                }
+
+                                if(locationList.size() > 0){
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    builder.include(locationList.get(0)); //Taking Point B (Second LatLng) //Taking Point A (First LatLng)
+                                    builder.include(locationList.get(locationList.size() - 1));
+                                    LatLngBounds bounds = builder.build();
+                                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+                                    mMap.moveCamera(cu);
+                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+                                }*/
+
+
 
                             }
                         });
@@ -500,10 +652,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 });
 
 
+
+
+
         } catch(SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
+
+
+
+
     }
+
+
 
 
     @Override
@@ -561,6 +722,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
+
+
 
 
 }

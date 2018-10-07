@@ -29,6 +29,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.yobro.MapFragment.calledAlready;
+
 public class MapActivityHome extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -47,6 +51,8 @@ public class MapActivityHome extends AppCompatActivity
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private GoogleSignInClient mGoogleSignInClient;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     private Toolbar mToolbar;
 
@@ -110,7 +116,14 @@ public class MapActivityHome extends AppCompatActivity
         user_Name = headerView.findViewById(R.id.userFirstName);
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
-        getUserProfile();
+
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        if(mUser == null){
+            Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
+            startActivity(loginIntent);
+            finish();
+        }else
+            getUserProfile();
     }
 
     private void getUserProfile() {
@@ -239,18 +252,15 @@ public class MapActivityHome extends AppCompatActivity
                 });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-
-        FirebaseUser mUser = mAuth.getCurrentUser();
-        if(mUser == null){
-            Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
-            startActivity(loginIntent);
-            finish();
-        }//else
-            //Snackbar.make(findViewById(android.R.id.content), "Signed In", Snackbar.LENGTH_SHORT).show();
+        if (!calledAlready)
+        {
+            firebaseDatabase = FirebaseDatabase.getInstance();
+//            firebaseDatabase.setPersistenceEnabled(true);
+            calledAlready = true;
+        }
     }
-
-
 }
