@@ -81,7 +81,7 @@ import java.util.concurrent.Executor;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener {
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -131,7 +131,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private Location mLastLocation;
 
-
+    protected static boolean Night_Mode = false;
 
     /**
      * Tracks whether the user has requested an address. Becomes true when the user requests an
@@ -167,7 +167,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
      String mlatitude;
      String mlongitude;
 
-     protected static boolean Night_Mode = false;
+
      private Marker myMarker;
 
 
@@ -181,6 +181,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+
+
+            Night_Mode = getArguments().getBoolean("NightMode");
             FirebaseHelper firebaseHelper = new FirebaseHelper();
 
             //User Info From Activity
@@ -259,31 +262,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
-        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        SwitchCompat drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.switch_item).getActionView();
 
-
-        drawerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // do stuff
-                    Night_Mode = true;
-                    onMapReady(mMap);
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Mode On", Snackbar.LENGTH_SHORT).show();
-
-                } else {
-                    // do other stuff
-                    Night_Mode = false;
-
-                    onMapReady(mMap);
-
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Mode Off", Snackbar.LENGTH_SHORT).show();
-
-                }
-            }
-        });
 
 
     }
@@ -335,10 +314,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return false;
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
-    }
 
 
     /**
@@ -399,7 +374,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private void makeUserOnline()
     {
 
-
         String personLatitude = Double.toString(mLastLocation.getLatitude());
         String personLongitude = Double.toString(mLastLocation.getLongitude());
 
@@ -442,6 +416,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
 
     @Override
     public void onResume() {
@@ -562,7 +543,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
                     mMap.setMyLocationEnabled(true);
+                    buildLocationCallBack();
+                    buildLocationRequest();
+                    startIntentService();
+                    startLocationUpdates();
                     getDeviceLocation();
+
 
                 }
 
@@ -711,6 +697,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
                                 });
+                                if(locationList.size() > 0){
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    builder.include(locationList.get(0)); //Taking Point B (Second LatLng) //Taking Point A (First LatLng)
+                                    builder.include(locationList.get(locationList.size() - 1));
+                                    LatLngBounds bounds = builder.build();
+                                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+                                    mMap.moveCamera(cu);
+                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+                                }
 
 //                                mMap.addMarker(new MarkerOptions().position(locationList.get(0)).title("Title can be anything"));
 
@@ -722,15 +717,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
                                 }
 */
-                                if(locationList.size() > 0){
-                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                    builder.include(locationList.get(0)); //Taking Point B (Second LatLng) //Taking Point A (First LatLng)
-                                    builder.include(locationList.get(locationList.size() - 1));
-                                    LatLngBounds bounds = builder.build();
-                                    CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
-                                    mMap.moveCamera(cu);
-                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
-                                }
+
 
 
 

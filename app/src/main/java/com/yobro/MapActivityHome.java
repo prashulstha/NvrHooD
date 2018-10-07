@@ -33,6 +33,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -61,6 +62,9 @@ public class MapActivityHome extends AppCompatActivity
 
     private Toolbar mToolbar;
 
+    //For Map to Load Toggle
+    protected static boolean Night_Mode = false;
+    Bundle bundle = new Bundle();
 
     //Button
     Switch onlineBtn;
@@ -84,10 +88,16 @@ public class MapActivityHome extends AppCompatActivity
 
 
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW);
 
         //Loading the Default Fragment
 
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+
+
+        bundle.putBoolean("NightMode", Night_Mode);
+        fragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
         Replace.commit();
@@ -126,11 +136,8 @@ public class MapActivityHome extends AppCompatActivity
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
 
-
-
-
-        mUser = mAuth.getCurrentUser();
         if (mUser == null) {
+            signInSilently();
             Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
             startActivity(loginIntent);
             finish();
@@ -139,7 +146,70 @@ public class MapActivityHome extends AppCompatActivity
             Snackbar.make(findViewById(android.R.id.content), "Signed In", Snackbar.LENGTH_SHORT).show();
             getUserProfile();}
 
+
+
+
+
+
+            //Swtich
+        SwitchCompat drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.switch_item).getActionView();
+
+
+        drawerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // do stuff
+                    Night_Mode = true;
+                    fragment = new MapFragment();
+                    Snackbar.make(MapActivityHome.this.findViewById(android.R.id.content), "Set Mode On", Snackbar.LENGTH_SHORT).show();
+
+                    bundle.putBoolean("NightMode", Night_Mode);
+                    fragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+                    Replace.commit();
+
+
+                } else {
+                    // do other stuff
+                    Night_Mode = false;
+                    fragment = new MapFragment();
+                    Snackbar.make(MapActivityHome.this.findViewById(android.R.id.content), "Set Mode Off", Snackbar.LENGTH_SHORT).show();
+
+                    bundle.putBoolean("NightMode", Night_Mode);
+                    fragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+                    Replace.commit();
+
+                }
+            }
+        });
+
     }
+
+    private void signInSilently() {
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
+                GoogleSignInOptions.DEFAULT_SIGN_IN);
+        signInClient.silentSignIn().addOnCompleteListener(this,
+                new OnCompleteListener<GoogleSignInAccount>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                        if (task.isSuccessful()) {
+                            // The signed in account is stored in the task's result.
+                            GoogleSignInAccount signedInAccount = task.getResult();
+
+                        } else {
+                            // Player will need to sign-in explicitly using via UI
+                            /*Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
+                            startActivity(loginIntent);
+                            finish();*/
+                        }
+                    }
+                });
+    }
+
 
     private void getUserProfile() {
 
@@ -240,10 +310,9 @@ public class MapActivityHome extends AppCompatActivity
 
         } else if (id == R.id.nav_history) {
             NavUtils.navigateUpFromSameTask(this);
-            Toast.makeText(getApplicationContext(), "No History to Show", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapActivityHome.this, "No History to Show", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_signout) {
-
 
             signOutUser();
         }
