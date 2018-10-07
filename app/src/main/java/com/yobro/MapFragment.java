@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
@@ -51,21 +52,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
+import com.yobro.JavaClasses.CustomeInfoWindowAdapter;
 import com.yobro.JavaClasses.FirebaseHelper;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "map1";
@@ -73,11 +77,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9901;
 
 
+    //Saving User Info in Global Variable
     private String userProfilePic;
     private String userName;
+    private Uri parseduserProfilepic;
 
-    private static final int MY_LOCATION_REQUEST_CODE = 9001;
+    //Google Map Variables
     private GoogleMap mMap;
+    private Marker myMarker;
+
+    //Google Map Request Integers
+    private static final int MY_LOCATION_REQUEST_CODE = 9001;
+
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     //Location Variables
@@ -88,11 +99,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     GeofencingClient mGeoDataClient;
     //PlaceDetectionClient mPlaceDetectionClient;
 
+    //Boolean Flag to save it's instance in the Bundle
     boolean mRequestingLocationUpdates;
     boolean mLocationPermissionGranted = false;
 
 
-
+    //Saving the User Location as a Global Variable to make it accessible
     double latitude;
     double longitude;
 
@@ -151,6 +163,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             if (list != null) {
                 userName = list.get(0);
                 userProfilePic = list.get(1);
+                parseduserProfilepic = Uri.parse(userProfilePic);
+            }
+            else
+            {
+                userName = "User";
+                userProfilePic = "https://images.idgesg.net/images/article/2017/08/android_robot_logo_by_ornecolorada_cc0_via_pixabay1904852_wide-100732483-large.jpg";
+                parseduserProfilepic = Uri.parse(userProfilePic);
             }
         }
         dialog = new Dialog(getContext());
@@ -180,7 +199,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         // Construct a PlaceDetectionClient.
         //mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
 
-        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
 
 
 
@@ -243,6 +262,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 showSnackbar(mAddressOutput);
             }
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        if(myMarker.equals(marker)) {
+
+            try{
+                if(myMarker.isInfoWindowShown()){
+                    myMarker.hideInfoWindow();
+                }else{
+
+                    myMarker.showInfoWindow();
+                }
+            }catch (NullPointerException e){
+                Log.e(TAG, "onClick: NullPointerException: " + e.getMessage() );
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -350,7 +389,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if(mRequestingLocationUpdates)
+            stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
@@ -396,6 +436,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             mMap.setBuildingsEnabled(true);
             mMap.setIndoorEnabled(true);
+            mMap.setOnMarkerClickListener(this);
+            mMap.setInfoWindowAdapter(new CustomeInfoWindowAdapter(getActivity()));
             getDeviceLocation();
             if (mapView != null &&
                     mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -471,16 +513,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                 LatLng customMarkerLocationThree = new LatLng(latitude + 0.009, longitude + .0020);
 
 
-                                mMap.addMarker(new MarkerOptions().position(customMarkerLocationOne).
+                                myMarker = mMap.addMarker(new MarkerOptions().position(customMarkerLocationOne).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),userName))));
+                                                createCustomMarker(getActivity(),parseduserProfilepic,userName))));
                                 mMap.addMarker(new MarkerOptions().position(customMarkerLocationTwo).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Mary Jane"))));
+                                                createCustomMarker(getActivity(),parseduserProfilepic,"Mary Jane"))));
 
                                 mMap.addMarker(new MarkerOptions().position(customMarkerLocationThree).
                                         icon(BitmapDescriptorFactory.fromBitmap(
-                                                createCustomMarker(getActivity(),Uri.parse(userProfilePic),"Janet John"))));
+                                                createCustomMarker(getActivity(),parseduserProfilepic,"Janet John"))));
 
                                 //LatLngBound will cover all your marker on Google Maps
                                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -509,19 +551,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onMyLocationClick (@NonNull Location location){
         Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
-       /* if(mLastLocation != null)
-            startIntentService();
-        mAddressRequested = true;
-*/
+        startIntentService();
 
-        dialog.setContentView(R.layout.custom_popup);
-        TextView add =  dialog.findViewById(R.id.DailogAddress);
-        CircleImageView imageView = dialog.findViewById(R.id.profile_image);
-        Picasso.get().load(Uri.parse(userProfilePic)).noFade().into(imageView);
-        add.setText(mAddressOutput);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        dialog.show();
     }
 
     @Override

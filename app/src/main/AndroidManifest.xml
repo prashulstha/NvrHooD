@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yobro">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.yobro"
+    >
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -8,6 +10,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -18,32 +21,35 @@
 
     <application
         android:allowBackup="true"
-        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="true">
         <activity android:name=".LoginAct" />
         <activity android:name=".BaseActivity" />
         <activity
             android:name=".MapActivityHome"
             android:label="@string/title_activity_map_home"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter android:autoVerify="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.yobro.MapActivityHome" />
+            <intent-filter android:autoVerify="true"
+                tools:targetApi="m">
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data
+                <data android:scheme="http"
                     android:host="www.github.com"
-                    android:pathPrefix="/pradulstha"
-                    android:scheme="http" />
+                    android:pathPrefix="/pradulstha" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -63,9 +69,7 @@
 
         <service
             android:name=".FetchAddressIntentService"
-            android:exported="false" />
-
-        <activity android:name=".MessageActivity"></activity>
+            android:exported="false"/>
     </application>
 
 </manifest>

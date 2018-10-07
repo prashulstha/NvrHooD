@@ -155,13 +155,17 @@ public class FirebaseHelper {
 
         FirebaseAuth mauth = FirebaseAuth.getInstance();
         FirebaseUser user = mauth.getCurrentUser();
-        final String id = user.getUid();
 
 
-        userInfo.add(user.getDisplayName());
-        Uri photoUri = user.getPhotoUrl();
-        userInfo.add(photoUri.toString());
-        userInfo.add(user.getEmail());
+        if (user != null) {
+            userInfo.add(user.getDisplayName());
+            Uri photoUri = user.getPhotoUrl();
+            if (photoUri != null) {
+                userInfo.add(photoUri.toString());
+            }
+            userInfo.add(user.getEmail());
+        }
+
 
         return userInfo;
     }
