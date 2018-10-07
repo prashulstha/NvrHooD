@@ -76,10 +76,6 @@
             android:name=".FetchAddressIntentService"
             android:exported="false" />
 
-        <activity
-            android:name=".HobbyFinder"
-            android:label="@string/title_activity_hobby_finder"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
@@ -70,7 +69,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
-import com.yobro.JavaClasses.CustomeInfoWindowAdapter;
 import com.yobro.JavaClasses.FirebaseHelper;
 import com.yobro.JavaClasses.UserProfile;
 
@@ -82,7 +80,9 @@ import java.util.concurrent.Executor;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener, NavigationView.OnNavigationItemSelectedListener {
+
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "map1";
@@ -90,18 +90,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9901;
 
 
-    //Saving User Info in Global Variable
     private String userProfilePic;
     private String userName;
-    private Uri parseduserProfilepic;
 
-    //Google Map Variables
-    private GoogleMap mMap;
-    private Marker myMarker;
-
-    //Google Map Request Integers
     private static final int MY_LOCATION_REQUEST_CODE = 9001;
-
+    private GoogleMap mMap;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     //Location Variables
@@ -112,13 +105,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     GeofencingClient mGeoDataClient;
     //PlaceDetectionClient mPlaceDetectionClient;
 
-    //Boolean Flag to save it's instance in the Bundle
     boolean mRequestingLocationUpdates;
     boolean mLocationPermissionGranted = false;
     static boolean calledAlready = false;
 
 
-    //Saving the User Location as a Global Variable to make it accessible
+
     double latitude;
     double longitude;
 
@@ -176,6 +168,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
      String mlongitude;
 
      protected static boolean Night_Mode = false;
+     private Marker myMarker;
 
 
 
@@ -195,13 +188,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             if (list != null) {
                 userName = list.get(0);
                 userProfilePic = list.get(1);
-                parseduserProfilepic = Uri.parse(userProfilePic);
-            }
-            else
-            {
-                userName = "User";
-                userProfilePic = "https://images.idgesg.net/images/article/2017/08/android_robot_logo_by_ornecolorada_cc0_via_pixabay1904852_wide-100732483-large.jpg";
-                parseduserProfilepic = Uri.parse(userProfilePic);
             }
         }
         dialog = new Dialog(getContext());
@@ -237,8 +223,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-
-
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
@@ -356,6 +340,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return false;
     }
 
+
     /**
      * Receiver for data sent from FetchAddressIntentService.
      */
@@ -470,7 +455,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onPause() {
         super.onPause();
 
-        if(mRequestingLocationUpdates)
+        if (mRequestingLocationUpdates)
 
             stopLocationUpdates();
     }
@@ -550,8 +535,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             mMap.setBuildingsEnabled(true);
             mMap.setIndoorEnabled(true);
-            mMap.setOnMarkerClickListener(this);
-            mMap.setInfoWindowAdapter(new CustomeInfoWindowAdapter(getActivity()));
             getDeviceLocation();
             if (mapView != null &&
                     mapView.findViewById(Integer.parseInt("1")) != null) {
@@ -684,6 +667,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                             final String key = ds.getKey();
                                             userKeys.add(key);
 
+
                                             //function to get the information of users
                                             muserDataBaseRef.addValueEventListener(new ValueEventListener() {
                                                 @Override
@@ -774,8 +758,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onMyLocationClick (@NonNull Location location){
         Toast.makeText(getContext(), "Current location:\n" + location, Toast.LENGTH_LONG).show();
-        startIntentService();
+       /* if(mLastLocation != null)
+            startIntentService();
+        mAddressRequested = true;
+*/
 
+        dialog.setContentView(R.layout.custom_popup);
+        TextView add =  dialog.findViewById(R.id.DailogAddress);
+        CircleImageView imageView = dialog.findViewById(R.id.profile_image);
+        Picasso.get().load(Uri.parse(userProfilePic)).noFade().into(imageView);
+        add.setText(mAddressOutput);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.show();
     }
 
     @Override

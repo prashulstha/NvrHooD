@@ -16,7 +16,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         app:srcCompat="@drawable/app_logo"
         android:contentDescription="@string/app_name"/>
 
@@ -28,7 +28,7 @@
         android:layout_gravity="center_horizontal"
         android:ems="10"
         android:background="@drawable/textwhitebox"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:inputType="textEmailAddress"
         android:hint="@string/prompt_email"
         android:paddingStart="@dimen/activity_horizontal_margin"
@@ -41,7 +41,7 @@
         android:layout_width="300dp"
         android:layout_height="36dp"
         android:ems="10"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
         android:inputType="textPassword"
         android:paddingStart="@dimen/activity_horizontal_margin"
@@ -54,17 +54,19 @@
     <Button
         android:id="@+id/signInButton"
         android:layout_width="300dp"
-        android:layout_height="38dp"
+        android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/signinbox"
-        android:text="@string/action_sign_in" />
+        android:text="@string/action_sign_in"
+        android:textAlignment="center"
+        android:paddingBottom="5dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:paddingTop="8dp">
 
         <View
