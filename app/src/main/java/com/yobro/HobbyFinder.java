@@ -52,7 +52,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void musicClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView music = findViewById(R.id.music);
         music.setCardBackgroundColor(Color.WHITE);
         hobbies += "music ";
@@ -65,7 +64,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void SportsClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Sports =  findViewById(R.id.Sports);
         Sports.setCardBackgroundColor(Color.WHITE);
         hobbies += "Sports ";
@@ -74,7 +72,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void PhotographyClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Photography =  findViewById(R.id.Photography);
         Photography.setCardBackgroundColor(Color.WHITE);
         hobbies +="Photography ";
@@ -83,7 +80,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void VideoGameClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView VideoGame = findViewById(R.id.VideoGame);
         VideoGame.setCardBackgroundColor(Color.WHITE);
         hobbies +="Video_Game ";
@@ -92,7 +88,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void HikingClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Hiking = findViewById(R.id.Hiking);
         Hiking.setCardBackgroundColor(Color.WHITE);
         hobbies +="Hiking ";
@@ -101,7 +96,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void DanceClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Dance = findViewById(R.id.Dance);
         Dance.setCardBackgroundColor(Color.WHITE);
         hobbies +="Dance ";
@@ -110,7 +104,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void WritingClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Writing = findViewById(R.id.Writing);
         Writing.setCardBackgroundColor(Color.WHITE);
         hobbies +="Writing ";
@@ -119,7 +112,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void ShoppingClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Shopping = findViewById(R.id.Shopping);
         Shopping.setCardBackgroundColor(Color.WHITE);
         hobbies+="Shopping ";
@@ -128,7 +120,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void CyclingClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Cycling = findViewById(R.id.Cycling);
         Cycling.setCardBackgroundColor(Color.WHITE);
         hobbies+="Cycling ";
@@ -137,7 +128,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void PokerClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Poker = findViewById(R.id.Poker);
         Poker.setCardBackgroundColor(Color.WHITE);
         hobbies+="Poker ";
@@ -146,7 +136,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void ProgrammingClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Programming = findViewById(R.id.Programming);
         Programming.setCardBackgroundColor(Color.WHITE);
         hobbies+="Programming ";
@@ -155,7 +144,6 @@ public class HobbyFinder extends AppCompatActivity {
     public void DramaClick(View view)
     {
         fab.setEnabled(true);
-        Toast.makeText(getApplicationContext(), "Item is Selected", Toast.LENGTH_LONG).show();
         CardView Drama = findViewById(R.id.Drama);
         Drama.setCardBackgroundColor(Color.WHITE);
         hobbies+="Drama ";
