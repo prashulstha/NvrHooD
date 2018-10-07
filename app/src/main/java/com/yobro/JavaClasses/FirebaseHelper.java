@@ -79,16 +79,17 @@ public class FirebaseHelper {
     }
 
 
-    public  void saveHobby(ArrayList<String> hobbylist)
-    {
-        userDataBaseRef = firebaseDatabase.getReference("Users");
-        for(int i=0;i<hobbylist.size();++i)
-        {
-            userDataBaseRef.child(userID).child("Hobby List").setValue(hobbylist.get(i));
+   public void saveHobby(String hobby)
+   {
+       userDataBaseRef =firebaseDatabase.getReference("Users");
+       try{
+           userDataBaseRef.child(userID).child("Hobby List").setValue(hobby);
 
-        }
-
-    }
+       }catch (DatabaseException e)
+       {
+           e.printStackTrace();
+       }
+   }
 
     public boolean saveLocation(Coordinates mcordinates)
     {

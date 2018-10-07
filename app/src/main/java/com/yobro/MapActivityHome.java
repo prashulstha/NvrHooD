@@ -17,6 +17,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.UserFragment;
 import com.yobro.JavaClasses.UserProfile;
 
 import org.w3c.dom.Text;
@@ -93,8 +95,8 @@ public class MapActivityHome extends AppCompatActivity
 
 
          //checkFirstTime = "No";
-
-         if(!checkFirstTime)
+/*
+         if(checkFirstTime)
          {
              fragment = new FindHobby();
              FragmentManager fragmentManager = getSupportFragmentManager();
@@ -103,12 +105,12 @@ public class MapActivityHome extends AppCompatActivity
              //Start the Map Activity
              sharedPreferences.edit().putBoolean("Islogin", true).apply();
          }
-        else{
+        else{*/
              FragmentManager fragmentManager = getSupportFragmentManager();
              FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
              Replace.commit();
 
-         }
+
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -233,10 +235,22 @@ public class MapActivityHome extends AppCompatActivity
             fragment = new MapFragment();
 
 
-        } else if (id == R.id.nav_setting) {
+        }
+        else if(id==R.id.nav_inbox){
+            fragment = new UserFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
+            Replace.addToBackStack(null).commit();
+
+        }
+        else if (id == R.id.nav_setting) {
 
 
-        } else if (id == R.id.nav_history) {
+        } else if (id == R.id.nav_hobby)
+        {
+            Intent intent = new Intent(MapActivityHome.this,HobbyFinder.class);
+            startActivity(intent);
+
 
         } else if (id == R.id.nav_explore) {
 
@@ -289,5 +303,10 @@ public class MapActivityHome extends AppCompatActivity
 //            firebaseDatabase.setPersistenceEnabled(true);
             calledAlready = true;
         }
+    }
+
+    public void popUpMenu(View view) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.openDrawer(Gravity.START);
     }
 }
