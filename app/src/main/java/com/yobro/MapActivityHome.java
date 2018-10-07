@@ -1,32 +1,29 @@
 package com.yobro;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.support.v7.widget.Toolbar;
+import android.widget.Toolbar;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,9 +32,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 import com.yobro.JavaClasses.Coordinates;
 import com.yobro.JavaClasses.FirebaseHelper;
+import com.yobro.JavaClasses.UserFragment;
 import com.yobro.JavaClasses.UserProfile;
 
 import org.w3c.dom.Text;
@@ -46,6 +46,8 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.yobro.MapFragment.calledAlready;
+
 public class MapActivityHome extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -53,12 +55,14 @@ public class MapActivityHome extends AppCompatActivity
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private GoogleSignInClient mGoogleSignInClient;
     FirebaseHelper firebaseHelper = new FirebaseHelper();
-    FirebaseUser mUser;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     private Toolbar mToolbar;
 
     //Button
     Switch onlineBtn;
+
 
     //Fragment
     Fragment fragment = new MapFragment();
@@ -78,13 +82,35 @@ public class MapActivityHome extends AppCompatActivity
         setContentView(R.layout.activity_map_home);
 
 
-
-
         //Loading the Default Fragment
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
-        Replace.commit();
+         firebaseDatabase = FirebaseDatabase.getInstance();
+         databaseReference = firebaseDatabase.getReference("Users");
+         mAuth = FirebaseAuth.getInstance();
+         String uId = mAuth.getUid();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+         boolean checkFirstTime = sharedPreferences.getBoolean("Islogin", false);
+
+
+         //checkFirstTime = "No";
+/*
+         if(checkFirstTime)
+         {
+             fragment = new FindHobby();
+             FragmentManager fragmentManager = getSupportFragmentManager();
+             FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+             Replace.commit();
+             //Start the Map Activity
+             sharedPreferences.edit().putBoolean("Islogin", true).apply();
+         }
+        else{*/
+             FragmentManager fragmentManager = getSupportFragmentManager();
+             FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+             Replace.commit();
+
+
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,7 +135,7 @@ public class MapActivityHome extends AppCompatActivity
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -120,47 +146,30 @@ public class MapActivityHome extends AppCompatActivity
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
 
-        mUser = mAuth.getCurrentUser();
-        if (mUser == null) {
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        if(mUser == null){
             Intent loginIntent = new Intent(MapActivityHome.this, LoginAct.class);
             startActivity(loginIntent);
             finish();
-
-        }else{
-            Snackbar.make(findViewById(android.R.id.content), "Signed In", Snackbar.LENGTH_SHORT).show();
-            getUserProfile();}
-
+        }else
+            getUserProfile();
     }
 
     private void getUserProfile() {
 
 
-       retrieveInfo = firebaseHelper.getUserInfo();
+        retrieveInfo = firebaseHelper.getUserInfo();
         Bundle bundle = new Bundle();
 
-        if(!retrieveInfo.isEmpty()){
-            user_Name.setText(retrieveInfo.get(0));
-            user_Email.setText(retrieveInfo.get(2));
-            Uri uri = Uri.parse(retrieveInfo.get(1));
-            Picasso.get()
-                    .load(uri)
-                    .noFade()
-                    .into(userProfileView);
-            bundle.putStringArrayList(key, retrieveInfo);
-            fragment.setArguments(bundle);
-        }
-        else
-        {
-            user_Name.setText(getResources().getText(R.string.app_name));
-            user_Email.setText(getResources().getText(R.string.action_sign_in_short));
-            Uri uri = Uri.parse("https://images.idgesg.net/images/article/2017/08/android_robot_logo_by_ornecolorada_cc0_via_pixabay1904852_wide-100732483-large.jpg");
-            Picasso.get()
-                    .load(uri)
-                    .noFade()
-                    .into(userProfileView);
-
-        }
-
+        user_Name.setText(retrieveInfo.get(0));
+        user_Email.setText(retrieveInfo.get(2));
+        Uri uri = Uri.parse(retrieveInfo.get(1));
+        Picasso.get()
+                .load(uri)
+                .noFade()
+                .into(userProfileView);
+        bundle.putStringArrayList(key, retrieveInfo);
+        fragment.setArguments(bundle);
 
     }
 
@@ -226,17 +235,26 @@ public class MapActivityHome extends AppCompatActivity
             fragment = new MapFragment();
 
 
-        } else if (id == R.id.nav_setting) {
-            NavUtils.navigateUpFromSameTask(this);
+        }
+        else if(id==R.id.nav_inbox){
+            fragment = new UserFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
+            Replace.addToBackStack(null).commit();
 
-        } else if (id == R.id.nav_history) {
-            NavUtils.navigateUpFromSameTask(this);
+        }
+        else if (id == R.id.nav_setting) {
+
+
+        } else if (id == R.id.nav_hobby)
+        {
+            Intent intent = new Intent(MapActivityHome.this,HobbyFinder.class);
+            startActivity(intent);
+
 
         } else if (id == R.id.nav_explore) {
 
-            NavUtils.navigateUpFromSameTask(this);
         } else if (id == R.id.nav_signout) {
-
 
             signOutUser();
         }
@@ -275,22 +293,20 @@ public class MapActivityHome extends AppCompatActivity
                 });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-
-
-        mUser = mAuth.getCurrentUser();
-
-        }//else
+        if (!calledAlready)
+        {
+            firebaseDatabase = FirebaseDatabase.getInstance();
+//            firebaseDatabase.setPersistenceEnabled(true);
+            calledAlready = true;
+        }
+    }
 
     public void popUpMenu(View view) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(Gravity.START);
-
     }
-
-    }
-
-
-
+}
