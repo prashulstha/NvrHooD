@@ -3,106 +3,126 @@ package com.yobro;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.GridLayout;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.yobro.JavaClasses.FirebaseHelper;
+
+import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FindHobby.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FindHobby#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FindHobby extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class FindHobby extends Fragment
+{
+    GridLayout mainGrid;
+    ArrayList<String> HobbyList;
+    FirebaseHelper firebaseHelper = new FirebaseHelper();
+    Button mbutton;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    int finalI;
 
-    private OnFragmentInteractionListener mListener;
-
-    public FindHobby() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FindHobby.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FindHobby newInstance(String param1, String param2) {
-        FindHobby fragment = new FindHobby();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_find_hobby, container, false);
-    }
+        View view = inflater.inflate(R.layout.fragment_find_hobby, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+
+        return view;
+
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mainGrid = view.findViewById(R.id.mainGrid);
+        HobbyList= storeHobby(mainGrid);
+        HobbyList = new ArrayList<String>();
+        mbutton =view.findViewById(R.id.nextButton);
+        mbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                firebaseHelper.saveHobby(HobbyList);
+
+
+                for(String list: HobbyList)
+                    Log.d("LOBBY", "onClick: " + list);
+            }
+        });
+
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onPause() {
+        super.onPause();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+
+    private ArrayList<String> storeHobby(GridLayout mainGrid)
+    {
+
+        for (int i=0;i<mainGrid.getChildCount();i++)
+        {
+            CardView cardView =(CardView) mainGrid.getChildAt(i);
+             finalI = i;
+
+            cardView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    if (finalI ==0)
+                        HobbyList.add("Music");
+                    else if (finalI==1)
+                        HobbyList.add("Sports");
+                    else if (finalI==2)
+                        HobbyList.add("Photography");
+                    else if (finalI==3)
+                        HobbyList.add("Video Game");
+                    else if (finalI==4)
+                        HobbyList.add("Hiking");
+                    else if (finalI==5)
+                        HobbyList.add("Dance");
+                    else if (finalI==6)
+                        HobbyList.add("Writing");
+                    else if (finalI==7)
+                        HobbyList.add("Shopping");
+                    else if (finalI==8)
+                        HobbyList.add("Cycling");
+                    else if (finalI==9)
+                        HobbyList.add("Poker");
+                    else if (finalI==10)
+                        HobbyList.add("Programming");
+                    else if (finalI==11)
+                        HobbyList.add("Drama");
+
+
+                }
+            });
+
+
+        }
+
+        return HobbyList;
+
+
     }
+
 }
+

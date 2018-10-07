@@ -1,10 +1,12 @@
 package com.yobro;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -59,6 +61,7 @@ public class MapActivityHome extends AppCompatActivity
     //Button
     Switch onlineBtn;
 
+
     //Fragment
     Fragment fragment = new MapFragment();
 
@@ -79,9 +82,33 @@ public class MapActivityHome extends AppCompatActivity
 
         //Loading the Default Fragment
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
-        Replace.commit();
+         firebaseDatabase = FirebaseDatabase.getInstance();
+         databaseReference = firebaseDatabase.getReference("Users");
+         mAuth = FirebaseAuth.getInstance();
+         String uId = mAuth.getUid();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+         boolean checkFirstTime = sharedPreferences.getBoolean("Islogin", false);
+
+
+         //checkFirstTime = "No";
+
+         if(!checkFirstTime)
+         {
+             fragment = new FindHobby();
+             FragmentManager fragmentManager = getSupportFragmentManager();
+             FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+             Replace.commit();
+             //Start the Map Activity
+             sharedPreferences.edit().putBoolean("Islogin", true).apply();
+         }
+        else{
+             FragmentManager fragmentManager = getSupportFragmentManager();
+             FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment);
+             Replace.commit();
+
+         }
 
 // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

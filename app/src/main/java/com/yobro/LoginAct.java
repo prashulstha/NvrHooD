@@ -1,13 +1,17 @@
 package com.yobro;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -34,10 +38,17 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
     private static final int RC_SIGN_IN = 7;
     private GoogleSignInClient mGoogleSignInClient;
 
+
+    Boolean isLogin = false;
+
     //Firebase Variables
     FirebaseAuth mAuth;
     DatabaseReference userDatabase;
+    FirebaseDatabase firebaseDatabase;
     FirebaseHelper firebaseHelper;
+
+    //SharedPreference
+    SharedPreferences sharedPreferences;
 
 
 
@@ -49,6 +60,7 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
         // Button listeners
         findViewById(R.id.gSignInButton).setOnClickListener(this);
         findViewById(R.id.SignoutBtn).setOnClickListener(this);
+
 
         // [START config_signin]
         // Configure Google Sign In
@@ -63,11 +75,15 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
         // [START initialize_auth]
 
         mAuth = FirebaseAuth.getInstance();
-        userDatabase = FirebaseDatabase.getInstance().getReference().child("/Users");  //Getting Reference to the Child User of the Firebase
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        userDatabase = firebaseDatabase.getReference().child("/Users");  //Getting Reference to the Child User of the Firebase
         userDatabase.keepSynced(true);   //Keeps the Database Synced
+        //firebaseDatabase.setPersistenceEnabled(true);
         // [END initialize_auth]
 
 
+        sharedPreferences=
+                PreferenceManager.getDefaultSharedPreferences(this);
         //Snackbar.make(findViewById(android.R.id.content),"Sign in Error",Snackbar.LENGTH_SHORT).show();
 
     }
@@ -109,10 +125,27 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                               updateUI();
-                            //Start the Map Activity
-                            Intent homeMapIntent = new Intent(LoginAct.this, MapActivityHome.class);
-                            startActivity(homeMapIntent);
-                            finish();
+
+                              boolean firstLogin = sharedPreferences.getBoolean("Islogin", false);
+
+
+                            // Check if we need to display our OnboardingFragment
+                            if(!firstLogin)
+                            {
+                                //Start the Map Activity
+                                sharedPreferences.edit().putBoolean("Islogin", isLogin).apply();
+                                Intent homeMapIntent = new Intent(LoginAct.this, MapActivityHome.class);
+
+                                startActivity(homeMapIntent);
+
+                            }
+                            else
+                            {
+                                Intent homeMapIntent = new Intent(LoginAct.this, MapActivityHome.class);
+                                startActivity(homeMapIntent);
+
+                            }
+
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -183,6 +216,7 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
 
@@ -193,13 +227,18 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
             signIn();
         }
         else if(i == R.id.SignoutBtn){
-            showProgressDialog();
+           // showProgressDialog();
             signOut();
 
     }
 
     }
-    public void signOut(){
+    public void signOut()
+    {
+
+
+
+
         FirebaseAuth.getInstance().signOut();
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {

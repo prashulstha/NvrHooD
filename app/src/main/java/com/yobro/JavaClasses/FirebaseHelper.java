@@ -78,6 +78,18 @@ public class FirebaseHelper {
 
     }
 
+
+    public  void saveHobby(ArrayList<String> hobbylist)
+    {
+        userDataBaseRef = firebaseDatabase.getReference("Users");
+        for(int i=0;i<hobbylist.size();++i)
+        {
+            userDataBaseRef.child(userID).child("Hobby List").setValue(hobbylist.get(i));
+
+        }
+
+    }
+
     public boolean saveLocation(Coordinates mcordinates)
     {
         String mlatitude, mlongtitude;
