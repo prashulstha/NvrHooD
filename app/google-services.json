@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "514206301078-m54avcf2459st75v9ki96b9gusbscf2r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yobro",
+            "certificate_hash": "077ad396b83fcafae690ee5a3045453650eebc8f"
+          }
+        },
+        {
+          "client_id": "514206301078-9go2nt63bmu78b6utnishc89qtlrd0rd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yobro",
+            "certificate_hash": "6933979b72b866c70d024540a869bd0738c82077"
+          }
+        },
+        {
           "client_id": "514206301078-807cgkj003ejb0mjr9ed32k02sj1407a.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -23,11 +39,25 @@
           }
         },
         {
+          "client_id": "514206301078-i4k12nnittaqjpgftr7h7h8f14chrrag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yobro",
+            "certificate_hash": "9c43899a10bf9aa9c4227255783b9f492a9ae7df"
+          }
+        },
+        {
           "client_id": "514206301078-c07tlf764nqnm9iod084lq9e6riqvi01.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
+        {
+          "current_key": "AIzaSyAafI-DHSD9UgHsZJrJNhQhOux_75ji5Po"
+        },
+        {
+          "current_key": "AIzaSyBCLWKaKORTUAh9WmldhFKt7OkYxv_ZHj4"
+        },
         {
           "current_key": "AIzaSyCvUdn-idqO3Wfxv0uq6ilUhFKvRFgJ3Ys"
         },
