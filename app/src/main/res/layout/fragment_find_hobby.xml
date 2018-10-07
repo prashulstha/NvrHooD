@@ -13,7 +13,7 @@
             android:background="@android:color/white"
             android:weightSum="10"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
 
@@ -28,7 +28,7 @@
                     android:id="@+id/textGrid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="50dp"
+                    android:layout_marginStart="50dp"
                     android:text="Select Your Hobby"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"
@@ -55,8 +55,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:cardElevation="8dp"
-                android:cardCornerRadius="8dp"
+
                 >
 
                 <LinearLayout
@@ -66,9 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                     />
-
-                    <TextView
+                     <TextView
                         android:text="Me"
                         android:textAlignment="center"
                         android:textColor="@android:color/white"
@@ -90,11 +87,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
 </FrameLayout>

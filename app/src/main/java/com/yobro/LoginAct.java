@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -183,6 +185,11 @@ public class LoginAct extends BaseActivity implements View.OnClickListener {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        /*FindHobby fragment = new FindHobby();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.signin_Layout, fragment );
+        Replace.addToBackStack(null).commit();*/
     }
 
 

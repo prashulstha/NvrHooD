@@ -18,12 +18,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.SwitchCompat;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
@@ -57,6 +60,7 @@ public class MapActivityHome extends AppCompatActivity
 
     private Toolbar mToolbar;
 
+
     //Button
     Switch onlineBtn;
 
@@ -79,6 +83,7 @@ public class MapActivityHome extends AppCompatActivity
 
 
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         //Loading the Default Fragment
 
@@ -119,6 +124,19 @@ public class MapActivityHome extends AppCompatActivity
         user_Name = headerView.findViewById(R.id.userFirstName);
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
+
+        SwitchCompat drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.switch_item).getActionView();
+        drawerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // do stuff
+                } else {
+                    // do other stuff
+                }
+            }
+        });
+
 
         mUser = mAuth.getCurrentUser();
         if (mUser == null) {
@@ -232,9 +250,6 @@ public class MapActivityHome extends AppCompatActivity
         } else if (id == R.id.nav_history) {
             NavUtils.navigateUpFromSameTask(this);
 
-        } else if (id == R.id.nav_explore) {
-
-            NavUtils.navigateUpFromSameTask(this);
         } else if (id == R.id.nav_signout) {
 
 
@@ -282,7 +297,7 @@ public class MapActivityHome extends AppCompatActivity
 
         mUser = mAuth.getCurrentUser();
 
-        }//else
+        }
 
     public void popUpMenu(View view) {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

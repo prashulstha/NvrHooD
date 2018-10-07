@@ -13,66 +13,111 @@
 
     <ImageView
         android:id="@+id/appLogo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        app:srcCompat="@drawable/googleg_standard_color_18"
+        app:srcCompat="@drawable/app_logo"
         android:contentDescription="@string/app_name"/>
 
 
     <EditText
         android:id="@+id/emailText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="36dp"
         android:layout_gravity="center_horizontal"
         android:ems="10"
-        android:layout_marginTop="50dp"
+        android:background="@drawable/textwhitebox"
+        android:layout_marginTop="30dp"
         android:inputType="textEmailAddress"
-        android:hint="@string/prompt_email"/>
+        android:hint="@string/prompt_email"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="10dp"
+        android:autofillHints="@string/prompt_email"
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/editText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="36dp"
         android:ems="10"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
         android:inputType="textPassword"
-        android:hint="@string/prompt_password"/>
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="10dp"
+        android:background="@drawable/textwhitebox"
+        android:hint="@string/prompt_password"
+        android:autofillHints="@string/prompt_password"
+        tools:targetApi="o"/>
 
     <Button
         android:id="@+id/signInButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="38dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/signinbox"
         android:text="@string/action_sign_in" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="300dp"
-        android:layout_height="3dp"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@android:color/background_light" />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/gSignInButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:text="@string/GSign"
-        android:background="@color/colorAccent"
-        android:textColor="@android:color/white"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:paddingTop="8dp">
 
-        />
+        <View
+            android:id="@+id/divider"
+            android:layout_width="160dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/background_light" />
+
+        <TextView
+            android:id="@+id/or"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/maven_pro_medium"
+            android:gravity="top"
+            android:text="OR"
+            android:textAlignment="gravity"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp" />
+        <View
+            android:layout_width="160dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/background_light" />
+
+    </LinearLayout>
+
+
+
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/gSignInButton"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:text="@string/GSign"
+            android:textColor="@android:color/white"
+            />
+
 
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign Out"
+        android:visibility="invisible"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:id="@+id/SignoutBtn"/>
