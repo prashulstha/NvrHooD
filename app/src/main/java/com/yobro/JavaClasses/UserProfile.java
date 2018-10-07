@@ -1,5 +1,7 @@
 package com.yobro.JavaClasses;
 
+import android.util.DisplayMetrics;
+
 import java.io.Serializable;
 
 public class UserProfile implements Serializable{
@@ -95,4 +97,5 @@ public class UserProfile implements Serializable{
     public void setPersonLongitude(String personLongitude) {
         this.personLongitude = personLongitude;
     }
+
 }
