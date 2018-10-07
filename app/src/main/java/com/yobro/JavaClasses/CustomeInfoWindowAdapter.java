@@ -6,14 +6,22 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.yobro.R;
 
@@ -29,6 +37,14 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private final View mWindow;
     private Context mContext;
     private Geocoder geocoder;
+    private double markerLatitude,markerLongitude;
+    private double mlatitude = 0.0, mlongitude = 0.0;
+
+
+
+    DatabaseReference muserDataBaseRef;
+    FirebaseDatabase firebaseDatabase;
+
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private ArrayList<String> retrieveInfo = new ArrayList<>();
     SharedPreferences preferences;
@@ -38,6 +54,8 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         mWindow = LayoutInflater.from(context).inflate(R.layout.custom_popup, null);
         geocoder = new Geocoder(context, Locale.getDefault());
         preferences = context.getSharedPreferences("YoBro", Context.MODE_PRIVATE);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        muserDataBaseRef = firebaseDatabase.getReference("Users");
     }
 
     private void rendowWindowText(Marker marker, final View view){
@@ -88,8 +106,67 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
 
     @Override
-    public View getInfoWindow(Marker marker) {
+    public View getInfoWindow(Marker marker)
+    {
         rendowWindowText(marker, mWindow);
+        LatLng latLng = marker.getPosition();
+
+        markerLatitude= latLng.latitude;
+        markerLongitude=latLng.longitude;
+        Log.d(Double.toString(markerLatitude),Double.toString(markerLongitude));
+        Log.d("Checking","latitudes of marker");
+        final ArrayList<String> userInfo = new ArrayList<>();
+
+
+
+        muserDataBaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot ds: dataSnapshot.getChildren())
+                {
+                    Coordinates cord = ds.getValue(Coordinates.class);
+
+
+
+
+                    if (cord != null) {
+                        String latitude = cord.getLatitude();
+                        String longitude = cord.getLongitude();
+
+                        mlatitude = Double.parseDouble(latitude);
+                        mlongitude = Double.parseDouble(longitude);
+
+                    }
+                    else
+                        Toast.makeText(mContext, "Error getting Location", Toast.LENGTH_SHORT).show();
+
+
+                    Log.d(Double.toString(mlatitude),Double.toString(mlongitude));
+                    Log.d("Checking","latitudes inside loop");
+
+                    if (mlatitude==markerLatitude && mlongitude==mlongitude)
+                    {
+                        final String key = ds.getKey();
+                        Log.d(key,"this is key");
+
+                    }
+
+
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Toast.makeText(mContext, "Error getting Data", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         return mWindow;
     }
 

@@ -1,5 +1,6 @@
 package com.yobro;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -247,7 +248,9 @@ public class MapActivityHome extends AppCompatActivity
         } else if (id == R.id.nav_setting) {
             NavUtils.navigateUpFromSameTask(this);
 
-        } else if (id == R.id.nav_history) {
+        } else if (id == R.id.Hobbies) {
+            Intent intent = new Intent(getApplicationContext(),HobbyFinder.class);
+            startActivity(intent);
             NavUtils.navigateUpFromSameTask(this);
 
         } else if (id == R.id.nav_signout) {

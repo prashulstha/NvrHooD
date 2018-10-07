@@ -56,6 +56,8 @@ public class FirebaseHelper {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         storageReference = FirebaseStorage.getInstance().getReference();
+
+
     }
 
 
@@ -113,6 +115,8 @@ public class FirebaseHelper {
 
 
     }
+
+
 
     public String saveProfilePic(final Uri UserProfilePic){
 
