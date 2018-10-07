@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -21,13 +23,16 @@ import android.os.ResultReceiver;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -52,6 +57,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -76,7 +82,7 @@ import java.util.concurrent.Executor;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, GoogleMap.OnMarkerClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "map1";
@@ -168,6 +174,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
      String mlatitude;
      String mlongitude;
+
+     protected static boolean Night_Mode = false;
 
 
 
@@ -267,6 +275,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        SwitchCompat drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.switch_item).getActionView();
+
+
+        drawerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // do stuff
+                    Night_Mode = true;
+                    onMapReady(mMap);
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Mode On", Snackbar.LENGTH_SHORT).show();
+
+                } else {
+                    // do other stuff
+                    Night_Mode = false;
+
+                    onMapReady(mMap);
+
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Set Mode Off", Snackbar.LENGTH_SHORT).show();
+
+                }
+            }
+        });
 
 
     }
@@ -301,18 +334,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         if(myMarker.equals(marker)) {
 
+
             try{
                 if(myMarker.isInfoWindowShown()){
                     myMarker.hideInfoWindow();
                 }else{
 
                     myMarker.showInfoWindow();
+                    mMap.getMaxZoomLevel();
                 }
             }catch (NullPointerException e){
                 Log.e(TAG, "onClick: NullPointerException: " + e.getMessage() );
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
     }
 
@@ -462,6 +502,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        if(!Night_Mode){
+
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                getActivity(), R.raw.retromapstyle));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+
+        }else{
+            try {
+                // Customise the styling of the base map using a JSON object defined
+                // in a raw resource file.
+                boolean success = googleMap.setMapStyle(
+                        MapStyleOptions.loadRawResourceStyle(
+                                getActivity(), R.raw.night_style_map));
+
+                if (!success) {
+                    Log.e(TAG, "Style parsing failed.");
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e(TAG, "Can't find style. Error: ", e);
+            }
+        }
+
 
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -491,7 +563,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 // position on right bottom
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-                layoutParams.setMargins(0, 0, 30, 30);
+                layoutParams.setMargins(0, 0, 30, 60);
             }
         }
     }
@@ -507,6 +579,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
                     mMap.setMyLocationEnabled(true);
+                    getDeviceLocation();
 
                 }
 
@@ -605,7 +678,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                             final LatLng latLng = new LatLng(latitude, longitude);
 
 
-                                            mMap.addMarker(new MarkerOptions().position(latLng).title("Title can be anything"));
+
 
 
                                             final String key = ds.getKey();

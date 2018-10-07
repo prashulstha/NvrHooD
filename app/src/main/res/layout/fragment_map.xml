@@ -6,17 +6,7 @@
     tools:context=".MapFragment"
     android:id="@+id/mapFragmentLayout">
 
-    <AutoCompleteTextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/onlineSwtich"
-        android:layout_centerVertical="true"
-        android:textSize="15sp"
-        android:textColor="#000"
-        android:id="@+id/input_search"
-        android:background="@null"
-        android:hint="Enter Address, City or Zip Code"
-        android:imeOptions="actionSearch"/>
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -35,7 +25,7 @@
         android:layout_alignParentEnd="true"
 
         android:layout_gravity="top|end"
-        android:layout_marginTop="17dp"
+        android:layout_marginTop="20dp"
 
         android:layout_marginEnd="17dp"
         android:clickable="true"

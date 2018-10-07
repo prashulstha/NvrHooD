@@ -25,18 +25,18 @@
         android:background="@drawable/marker_image">
 
         <TextView
-            android:text="janet John"
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="7sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginStart="10dp"
-            android:textColor="#000"
             android:alpha="0.8"
             android:background="@drawable/marker_circle"
-            android:id="@+id/name"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:gravity="center"
+            android:text="janet John"
+            android:textColor="#000"
+            android:textSize="7sp" />
 
 
     </RelativeLayout>

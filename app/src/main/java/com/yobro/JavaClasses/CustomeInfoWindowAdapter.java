@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -32,6 +34,7 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     private FirebaseHelper firebaseHelper = new FirebaseHelper();
     private ArrayList<String> retrieveInfo = new ArrayList<>();
     SharedPreferences preferences;
+    double markerLatitude, markerLongitude;
 
     public CustomeInfoWindowAdapter(Context context) {
         mContext = context;
@@ -45,6 +48,7 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         TextView dialogAddress = view.findViewById(R.id.DailogAddress);
         final TextView dialogActivity = view.findViewById(R.id.daialogActivity);
         final EditText dialogEditActivity = view.findViewById(R.id.daialogEditActivity);
+        Button updateActivity = view.findViewById(R.id.updateActivity);
 
         CircleImageView imageView = view.findViewById(R.id.profile_image);
 
@@ -64,7 +68,7 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         dialogActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogActivity.setVisibility(View.INVISIBLE);
+                dialogActivity.setVisibility(View.GONE);
                 dialogEditActivity.setVisibility(View.VISIBLE);
 
                 String act = dialogActivity.getText().toString().trim();
@@ -90,6 +94,10 @@ public class CustomeInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     @Override
     public View getInfoWindow(Marker marker) {
         rendowWindowText(marker, mWindow);
+        LatLng latLng = marker.getPosition();
+        markerLatitude = latLng.latitude;
+        markerLongitude = latLng.longitude;
+
         return mWindow;
     }
 

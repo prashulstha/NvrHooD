@@ -4,7 +4,7 @@
     xmlns:card_view="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="300dp"
-    android:layout_height="250dp"
+    android:layout_height="270dp"
     card_view:cardElevation="3dp"
     app:cardCornerRadius="20dp"
     app:cardBackgroundColor="@color/colorPrimary"
@@ -56,7 +56,9 @@
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:paddingEnd="10dp"
+
+            >
 
             <TextView
                 android:id="@+id/daialogActivity"
@@ -67,38 +69,38 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="4dp"
                 android:gravity="center_horizontal"
-                android:text="@string/app_name"
-                />
+                android:text="@string/app_name" />
+
             <EditText
                 android:id="@+id/daialogEditActivity"
                 android:layout_width="100dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_horizontal"
-                android:visibility="gone"
-                android:inputType="text"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="4dp"
                 android:gravity="bottom"
+                android:importantForAutofill="no"
+                android:inputType="text"
                 android:text="@string/app_name"
 
-                android:importantForAutofill="no"
+                android:visibility="gone"
                 card_view:targetApi="o" />
 
-            <TextView
+            <Button
                 android:id="@+id/updateActivity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="4dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:gravity="end"
                 android:text="Update"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="#fc3200"
-                android:textSize="12sp"
-               android:clickable="true"
 
-                android:focusable="true" />
+                android:textSize="12sp" />
 
         </LinearLayout>
 

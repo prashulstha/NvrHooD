@@ -30,6 +30,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -125,17 +126,7 @@ public class MapActivityHome extends AppCompatActivity
         user_Email = headerView.findViewById(R.id.userEmail);
         userProfileView = headerView.findViewById(R.id.userProfilePic);
 
-        SwitchCompat drawerSwitch = (SwitchCompat) navigationView.getMenu().findItem(R.id.switch_item).getActionView();
-        drawerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // do stuff
-                } else {
-                    // do other stuff
-                }
-            }
-        });
+
 
 
         mUser = mAuth.getCurrentUser();
@@ -249,6 +240,7 @@ public class MapActivityHome extends AppCompatActivity
 
         } else if (id == R.id.nav_history) {
             NavUtils.navigateUpFromSameTask(this);
+            Toast.makeText(getApplicationContext(), "No History to Show", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_signout) {
 
@@ -256,9 +248,9 @@ public class MapActivityHome extends AppCompatActivity
             signOutUser();
         }
 
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
-        //Replace.addToBackStack(null).commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction Replace = fragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment );
+        Replace.addToBackStack(null).commit();
 
         item.setChecked(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
