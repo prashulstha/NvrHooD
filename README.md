@@ -19,17 +19,17 @@ Reason: Living on the same university is awesome with lots of friends around, bu
         
 Screenshot:
 
-![alt text] (https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43322960_315955519189573_3680312911361736704_n.png)
+![alt text](https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43322960_315955519189573_3680312911361736704_n.png)
 
-![alt text] (https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43490671_989351164585220_2366478610174312448_n.png)
+![alt text](https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43490671_989351164585220_2366478610174312448_n.png)
 
-![alt text] (https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43300260_2043805389004467_4755971158359146496_n.png)
+![alt text](https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43300260_2043805389004467_4755971158359146496_n.png)
 
-![alt_text] (https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43378477_572380243208643_4512591764174929920_n.png)
+![alt text](https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43378477_572380243208643_4512591764174929920_n.png)
 
-![alt text] (https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43358326_348667832539573_7630033268477263872_n.png)
+![alt text](https://raw.githubusercontent.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43358326_348667832539573_7630033268477263872_n.png)
 
-![alt text] (https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43381083_154631248815885_4788521461365080064_n.png)
+![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/43381083_154631248815885_4788521461365080064_n.png)
 
 
 
