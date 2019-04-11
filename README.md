@@ -3,8 +3,7 @@ NvrHood - Location-Based Social App
 
 University of Iowa, Hackathon 2018 Project - Prashul Shrestha, Amit Gyawali, Pawan Dhungana
 
-About: NvrHood - an Android Mobile Application that uses Google Map Api to Track User's Location and share them with thier friends. 
-Users can use toggle to enable thier location sharing or browse online users. 
+About: NvrHood - an Android Mobile Application that allows people to add thier interest and hobbies to the app. The app uses Google Map Api to Track User's Location and share them with thier friends. Users can use toggle to enable thier location sharing and see online people and thier interests. 
 
 Integration: Google Maps Api,
              Google Places SDK,
