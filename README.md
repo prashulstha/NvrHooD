@@ -19,17 +19,7 @@ Reason: Living on the same university is awesome with lots of friends around, bu
         
 Screenshot:
 
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/First.png)
-
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Second.png)
-
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Third.png)
-
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/fourth.png)
-
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Fifth.png)
-
-![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Sixth.png)
+![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/First.png) ![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Second.png) ![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Third.png) ![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/fourth.png) ![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Fifth.png) ![alt text](https://github.com/pradhulstha/NvrHooD/blob/prashul/app/src/main/res/drawable/Sixth.png)
 
 
 
